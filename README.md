@@ -6,7 +6,9 @@ código de barras; se o produto não está na base, fotografa o rótulo, que pas
 por OCR + análise clínica. O resultado é uma avaliação de risco personalizada,
 em linguagem adaptada ao perfil do usuário.
 
-**Contexto:** TCC — UNESP FCT, Bacharelado em Ciência da Computação.
+Aplicação desenvolvida como Trabalho de Conclusão de Curso — UNESP FCT, Bacharelado em Ciência da Computação.
+Discente: Pedro Alonso Oliveira dos Santos
+Orientador: Prof. Dr. Danilo Medeiros Eler
 
 ## Stack
 
@@ -57,29 +59,3 @@ constants/      # cores, risco, rotas
 utils/          # formatadores, helpers de cor de risco
 ```
 
-Detalhes em [fe/ARCHITECTURE.md](./fe/ARCHITECTURE.md). Especificação completa em
-[`fe/`](./fe) e protótipo visual em [`claude-design/`](./claude-design).
-
-## Como implementar (ordem)
-
-O projeto é construído **parte a parte**. Cada subparte tem um plano próprio e
-auto-contido em [`fe/plans/`](./fe/plans), e deve ser implementada nesta ordem
-(cada uma depende das anteriores):
-
-1. `01-design-system` — tokens, constantes e primitivos de UI
-2. `02-api-auth-infra` — client axios, storage, services, hooks, auth store
-3. `03-auth-screens` — welcome / login / register
-4. `04-app-shell-home` — tabs + auth guard + Home
-5. `05-barcode-scanner` — leitor de código de barras
-6. `06-ocr-capture` — captura de foto do rótulo + `POST /analyze`
-7. `07-result-screen` — tela de resultado da análise
-8. `08-history` — histórico de scans + detalhe
-9. `09-profile` — perfil + edição
-
-Cada plano referencia o protótipo (`claude-design/*.jsx`) como referência visual
-e segue o fluxo de git de [.claude/rules/git-workflow.md](./.claude/rules/git-workflow.md).
-
-## Convenções de git
-
-- Branches: `(feat|fix|release)/NN/<nome>` (ex.: `feat/01/design-system`).
-- Commits: `tipo: mensagem` (só título). Ver [fe/GIT-CONVENTIONS.md](./fe/GIT-CONVENTIONS.md).
