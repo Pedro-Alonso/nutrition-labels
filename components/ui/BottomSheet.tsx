@@ -3,7 +3,7 @@ import RNBottomSheet, {
   BottomSheetScrollView,
   BottomSheetView,
 } from '@gorhom/bottom-sheet';
-import { useCallback, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { View } from 'react-native';
 
 interface BottomSheetProps {
@@ -38,12 +38,13 @@ export function BottomSheet({
     [],
   );
 
-  // Imperative show/hide driven by `visible`
-  if (visible) {
-    ref.current?.snapToIndex(0);
-  } else {
-    ref.current?.close();
-  }
+  useEffect(() => {
+    if (visible) {
+      ref.current?.snapToIndex(0);
+    } else {
+      ref.current?.close();
+    }
+  }, [visible]);
 
   return (
     <RNBottomSheet
