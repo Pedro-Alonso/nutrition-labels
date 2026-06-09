@@ -12,6 +12,7 @@ export default function ScanLayout() {
       }}
     >
       <Stack.Screen name="barcode" options={{ title: 'Escanear produto' }} />
+      <Stack.Screen name="ocr" options={{ title: 'Fotografar rótulo' }} />
     </Stack>
   );
 }
