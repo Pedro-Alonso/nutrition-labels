@@ -1,6 +1,6 @@
 import { ActivityIndicator, Pressable, Text } from 'react-native';
 
-type Variant = 'primary' | 'secondary' | 'ghost' | 'danger';
+type Variant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'ghost-danger';
 
 interface ButtonProps {
   variant?: Variant;
@@ -30,6 +30,10 @@ const variantClasses: Record<Variant, { container: string; text: string }> = {
   danger: {
     container: 'bg-feedback-error active:bg-red-700 rounded-xl px-6 min-h-[56px]',
     text: 'text-white font-bold text-lg',
+  },
+  'ghost-danger': {
+    container: 'bg-transparent active:bg-red-50 rounded-xl px-6 min-h-[56px]',
+    text: 'text-feedback-error font-semibold text-lg',
   },
 };
 
