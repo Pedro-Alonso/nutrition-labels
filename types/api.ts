@@ -77,6 +77,16 @@ export interface ScansParams {
   per_page?: number;
 }
 
+export interface ScanDetailResponse {
+  id: string;
+  created_at: string;
+  detected_format: string | null;
+  passed: boolean;
+  winning_preset: string | null;
+  risco_global: string | null;
+  result_json: AnalyzeResponse;
+}
+
 // ─── Analysis ────────────────────────────────────────────────────────────────
 
 export interface AnalyzeRequest {
