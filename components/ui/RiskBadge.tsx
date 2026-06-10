@@ -8,6 +8,8 @@ type Size = 'sm' | 'md' | 'lg';
 interface RiskBadgeProps {
   level: RiskLevel;
   size?: Size;
+  /** White pill with risk-colored text — for use on top of a risk-colored background (e.g. result hero). */
+  inverted?: boolean;
 }
 
 const sizeClasses: Record<Size, { container: string; text: string }> = {
@@ -16,19 +18,23 @@ const sizeClasses: Record<Size, { container: string; text: string }> = {
   lg: { container: 'px-4 py-2 rounded-full', text: 'text-base font-bold uppercase tracking-wide' },
 };
 
-export function RiskBadge({ level, size = 'md' }: RiskBadgeProps) {
+export function RiskBadge({ level, size = 'md', inverted = false }: RiskBadgeProps) {
   const label = RISK_LABELS[level];
-  const bgColor = getRiskHex(level);
+  const riskColor = getRiskHex(level);
   const { container, text } = sizeClasses[size];
 
   return (
     <View
-      style={{ backgroundColor: bgColor }}
+      style={{ backgroundColor: inverted ? '#FFFFFF' : riskColor }}
       className={container}
       accessible
       accessibilityLabel={`Risco ${label}`}
     >
-      <Text className={`${text} text-white`} allowFontScaling>
+      <Text
+        className={`${text} ${inverted ? '' : 'text-white'}`}
+        style={inverted ? { color: riskColor } : undefined}
+        allowFontScaling
+      >
         {label}
       </Text>
     </View>
