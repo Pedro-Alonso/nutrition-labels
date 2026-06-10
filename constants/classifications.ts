@@ -33,3 +33,25 @@ export function getFormatLabel(format: string | null | undefined): string {
     format.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())
   );
 }
+
+export const DIABETES_TYPE_LABELS: Record<string, string> = {
+  DM1: "Diabetes Tipo 1",
+  DM2: "Diabetes Tipo 2",
+  DMG: "Diabetes Gestacional",
+  outro: "Outro tipo",
+};
+
+export function getDiabetesTypeLabel(type: string | null | undefined): string {
+  if (!type) return "Não informado";
+  return DIABETES_TYPE_LABELS[type] ?? "Não informado";
+}
+
+export const LANGUAGE_LEVEL_LABELS: Record<string, string> = {
+  leigo: "Linguagem simples",
+  tecnico: "Linguagem técnica",
+};
+
+export function getLanguageLevelLabel(level: string | null | undefined): string {
+  if (!level) return "Não informado";
+  return LANGUAGE_LEVEL_LABELS[level] ?? "Não informado";
+}
