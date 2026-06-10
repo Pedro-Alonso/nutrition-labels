@@ -26,3 +26,11 @@ export function getInitials(name: string | null | undefined): string {
   if (parts.length > 1) return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
   return parts[0].slice(0, 2).toUpperCase();
 }
+
+export function formatMemberSince(iso: string): string {
+  const formatted = new Date(iso).toLocaleDateString('pt-BR', {
+    month: 'long',
+    year: 'numeric',
+  });
+  return formatted.charAt(0).toUpperCase() + formatted.slice(1);
+}
