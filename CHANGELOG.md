@@ -20,6 +20,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Rotas das telas em abas (início, histórico, perfil) não incluíam o grupo
+  `(tabs)` exigido pelo roteamento tipado, gerando erros de typecheck. As
+  constantes de rota foram corrigidas e as navegações inline passaram a usar
+  `ROUTES`.
 - Botões de captura/galeria/ajuda na tela de foto do rótulo não respondiam ao
   toque (a barra de abas cobria os controles). O fluxo de scan agora abre em
   tela cheia, fora das abas, com respeito à área segura inferior.
