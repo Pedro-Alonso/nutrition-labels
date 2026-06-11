@@ -153,17 +153,54 @@ export interface AnalyzeResponse {
 
 // ─── Products ────────────────────────────────────────────────────────────────
 
+export interface NutritionalRowData {
+  nutrient: string;
+  values: string[];
+}
+
+export interface NutritionalTableData {
+  portion_description?: string | null;
+  columns: string[];
+  rows: NutritionalRowData[];
+}
+
+export interface IngredientsData {
+  items: string[];
+}
+
+export interface ImageUpload {
+  uri: string;
+  name: string;
+  type: string;
+}
+
+export interface OcrPreviewRequest {
+  image_nutrition?: ImageUpload | null;
+  image_ingredients?: ImageUpload | null;
+}
+
+export interface OcrPreviewResponse {
+  barcode: string;
+  nutritional_table: NutritionalTableData | null;
+  ingredients: IngredientsData | null;
+}
+
 export interface Product {
   barcode: string;
   name: string | null;
   brand: string | null;
+  nutritional_table?: NutritionalTableData | null;
+  ingredients?: IngredientsData | null;
   analysis: IngredientAnalysis | null;
+  created_at: string;
+  updated_at: string;
 }
 
-export interface CreateProductRequest {
+export interface ProductCreateRequest {
   name?: string | null;
   brand?: string | null;
-  [key: string]: unknown;
+  nutritional_table?: NutritionalTableData | null;
+  ingredients?: IngredientsData | null;
 }
 
 // ─── Presets ─────────────────────────────────────────────────────────────────
