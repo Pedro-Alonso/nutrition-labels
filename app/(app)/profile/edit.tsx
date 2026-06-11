@@ -19,7 +19,7 @@ const LANGUAGE_VALUES = ['simples', 'padrão', 'técnico'] as const;
 const editProfileSchema = z.object({
   display_name: z.string(),
   diabetes_type: z.enum(DIABETES_VALUES, { message: 'Selecione o tipo de diabetes.' }),
-  language_level: z.enum(LANGUAGE_VALUES).default('padrão'),
+  language_level: z.enum(LANGUAGE_VALUES),
 });
 
 type EditProfileFormData = z.infer<typeof editProfileSchema>;
@@ -36,7 +36,7 @@ export default function ProfileEditScreen() {
   } = useForm<EditProfileFormData>({
     resolver: zodResolver(editProfileSchema),
     values: user
-      ? {
+      ? ({
           display_name: user.display_name ?? '',
           // valores legados (DM1/leigo) não casam com as chaves do backend → reset
           diabetes_type: DIABETES_VALUES.includes(user.diabetes_type as never)
@@ -45,7 +45,7 @@ export default function ProfileEditScreen() {
           language_level: LANGUAGE_VALUES.includes(user.language_level as never)
             ? (user.language_level as EditProfileFormData['language_level'])
             : 'padrão',
-        }
+        } as EditProfileFormData)
       : undefined,
   });
 

@@ -21,7 +21,7 @@ const registerSchema = z.object({
   diabetes_type: z.enum(['type1', 'type2', 'dmg'], {
     message: 'Selecione o tipo de diabetes.',
   }),
-  language_level: z.enum(['simples', 'padrão', 'técnico']).default('padrão'),
+  language_level: z.enum(['simples', 'padrão', 'técnico']),
 });
 
 type RegisterFormData = z.infer<typeof registerSchema>;
@@ -54,7 +54,7 @@ export default function RegisterScreen() {
         password: data.password,
         display_name: data.display_name || undefined,
         diabetes_type: data.diabetes_type,
-        language_level: data.language_level ?? 'padrão',
+        language_level: data.language_level,
       });
       await login({ email: data.email, password: data.password });
       router.replace('/(app)/(home)');
