@@ -1,5 +1,6 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { router } from 'expo-router';
+import { logApiError, logRequest, logResponse } from '@/lib/logger';
 import { storage } from '@/services/storage';
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL ?? 'http://localhost:8000/api/v1';
@@ -32,14 +33,19 @@ apiClient.interceptors.request.use(async (config: InternalAxiosRequestConfig) =>
   if (token) {
     config.headers.set('Authorization', `Bearer ${token}`);
   }
+  logRequest(config);
   return config;
 });
 
 // ─── Response interceptor — handle 401 + refresh ─────────────────────────────
 
 apiClient.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    logResponse(response);
+    return response;
+  },
   async (error: AxiosError) => {
+    logApiError(error);
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
     if (error.response?.status !== 401 || originalRequest._retry) {
