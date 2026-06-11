@@ -2,7 +2,7 @@ import { Stack } from 'expo-router';
 import { ScanFlowProvider } from '@/stores/scanFlowStore';
 
 // Cabeçalho claro para as telas de conteúdo (revisão/resultado), em contraste
-// com o cabeçalho transparente sobre a câmera (barcode/ocr).
+// com o cabeçalho transparente sobre a câmera (barcode/fotos do rótulo).
 const contentHeader = {
   headerTransparent: false,
   headerStyle: { backgroundColor: '#FFFFFF' },
@@ -24,7 +24,6 @@ export default function ScanLayout() {
         }}
       >
         <Stack.Screen name="barcode" options={{ title: 'Escanear produto' }} />
-        <Stack.Screen name="ocr" options={{ title: 'Fotografar rótulo' }} />
         <Stack.Screen name="table-photo" options={{ title: 'Tabela nutricional' }} />
         <Stack.Screen name="ingredients-photo" options={{ title: 'Lista de ingredientes' }} />
         <Stack.Screen name="table-review" options={{ title: 'Revisar tabela', ...contentHeader }} />
