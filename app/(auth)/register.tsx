@@ -18,8 +18,10 @@ const registerSchema = z.object({
   display_name: z.string().optional(),
   email: z.string().min(1, 'Informe seu e-mail.').email('Informe um e-mail válido.'),
   password: z.string().min(8, 'A senha deve ter pelo menos 8 caracteres.'),
-  diabetes_type: z.enum(['DM1', 'DM2', 'DMG', 'outro']).nullable(),
-  language_level: z.enum(['leigo', 'tecnico']).nullable(),
+  diabetes_type: z.enum(['type1', 'type2', 'dmg'], {
+    message: 'Selecione o tipo de diabetes.',
+  }),
+  language_level: z.enum(['simples', 'padrão', 'técnico']).default('padrão'),
 });
 
 type RegisterFormData = z.infer<typeof registerSchema>;
@@ -39,8 +41,8 @@ export default function RegisterScreen() {
       display_name: '',
       email: '',
       password: '',
-      diabetes_type: null,
-      language_level: null,
+      diabetes_type: undefined,
+      language_level: 'padrão',
     },
   });
 
@@ -52,7 +54,7 @@ export default function RegisterScreen() {
         password: data.password,
         display_name: data.display_name || undefined,
         diabetes_type: data.diabetes_type,
-        language_level: data.language_level,
+        language_level: data.language_level ?? 'padrão',
       });
       await login({ email: data.email, password: data.password });
       router.replace('/(app)/(home)');
@@ -159,18 +161,22 @@ export default function RegisterScreen() {
               className="absolute bg-neutral-50 px-2.5 text-[11px] font-semibold tracking-wide text-neutral-400"
               allowFontScaling
             >
-              PERFIL CLÍNICO (OPCIONAL)
+              PERFIL CLÍNICO
             </Text>
           </View>
           <Text className="-mt-2 text-xs text-neutral-400 text-center leading-5" allowFontScaling>
-            Usamos para personalizar as análises de risco
+            Personalizamos as análises de risco ao seu perfil
           </Text>
 
           <Controller
             control={control}
             name="diabetes_type"
             render={({ field: { onChange, value } }) => (
-              <DiabetesTypePicker value={value} onChange={onChange} />
+              <DiabetesTypePicker
+                value={value ?? null}
+                onChange={onChange}
+                error={errors.diabetes_type?.message}
+              />
             )}
           />
 
