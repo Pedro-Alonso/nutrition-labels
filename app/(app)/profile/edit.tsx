@@ -13,10 +13,13 @@ import { Input } from '@/components/ui/Input';
 import { Toast } from '@/components/ui/Toast';
 import { useMe, useUpdateProfile } from '@/hooks/useMe';
 
+const DIABETES_VALUES = ['type1', 'type2', 'dmg'] as const;
+const LANGUAGE_VALUES = ['simples', 'padrão', 'técnico'] as const;
+
 const editProfileSchema = z.object({
   display_name: z.string(),
-  diabetes_type: z.enum(['DM1', 'DM2', 'DMG', 'outro']).nullable(),
-  language_level: z.enum(['leigo', 'tecnico']).nullable(),
+  diabetes_type: z.enum(DIABETES_VALUES, { message: 'Selecione o tipo de diabetes.' }),
+  language_level: z.enum(LANGUAGE_VALUES).default('padrão'),
 });
 
 type EditProfileFormData = z.infer<typeof editProfileSchema>;
@@ -26,13 +29,22 @@ export default function ProfileEditScreen() {
   const updateProfile = useUpdateProfile();
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
-  const { control, handleSubmit } = useForm<EditProfileFormData>({
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<EditProfileFormData>({
     resolver: zodResolver(editProfileSchema),
     values: user
       ? {
           display_name: user.display_name ?? '',
-          diabetes_type: (user.diabetes_type as EditProfileFormData['diabetes_type']) ?? null,
-          language_level: (user.language_level as EditProfileFormData['language_level']) ?? null,
+          // valores legados (DM1/leigo) não casam com as chaves do backend → reset
+          diabetes_type: DIABETES_VALUES.includes(user.diabetes_type as never)
+            ? (user.diabetes_type as EditProfileFormData['diabetes_type'])
+            : undefined,
+          language_level: LANGUAGE_VALUES.includes(user.language_level as never)
+            ? (user.language_level as EditProfileFormData['language_level'])
+            : 'padrão',
         }
       : undefined,
   });
@@ -130,7 +142,11 @@ export default function ProfileEditScreen() {
             control={control}
             name="diabetes_type"
             render={({ field: { onChange, value } }) => (
-              <DiabetesTypePicker value={value} onChange={onChange} />
+              <DiabetesTypePicker
+                value={value ?? null}
+                onChange={onChange}
+                error={errors.diabetes_type?.message}
+              />
             )}
           />
 
@@ -138,7 +154,7 @@ export default function ProfileEditScreen() {
             control={control}
             name="language_level"
             render={({ field: { onChange, value } }) => (
-              <LanguageLevelPicker value={value} onChange={onChange} />
+              <LanguageLevelPicker value={value ?? null} onChange={onChange} />
             )}
           />
 
