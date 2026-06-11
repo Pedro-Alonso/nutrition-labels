@@ -23,6 +23,15 @@ interface ScanFlowState extends ScanFlowData {
   ingredientsDirty: boolean;
 }
 
+// Estado da etapa de captura (caminho OCR, barcode 404). Acumula as URIs das
+// duas fotos entre as telas table-photo → ingredients-photo. URI null numa etapa
+// significa que o usuário optou pelo preenchimento manual dela.
+export interface ScanCapture {
+  barcode: string;
+  tableUri: string | null;
+  ingredientsUri: string | null;
+}
+
 export interface ScanFlowStore {
   flow: ScanFlowState | null;
   // dirty acumulado: tabela OU ingredientes editados.
@@ -32,6 +41,10 @@ export interface ScanFlowStore {
   setTableDirty: (dirty: boolean) => void;
   setIngredients: (ingredients: IngredientsData) => void;
   setIngredientsDirty: (dirty: boolean) => void;
+  capture: ScanCapture | null;
+  startCapture: (barcode: string) => void;
+  setCaptureTable: (uri: string | null) => void;
+  setCaptureIngredients: (uri: string | null) => void;
   reset: () => void;
 }
 
@@ -39,6 +52,7 @@ const ScanFlowContext = createContext<ScanFlowStore | null>(null);
 
 export function ScanFlowProvider({ children }: { children: ReactNode }) {
   const [flow, setFlow] = useState<ScanFlowState | null>(null);
+  const [capture, setCapture] = useState<ScanCapture | null>(null);
 
   const startFlow = useCallback((data: ScanFlowData) => {
     setFlow({ ...data, tableDirty: false, ingredientsDirty: false });
@@ -60,7 +74,22 @@ export function ScanFlowProvider({ children }: { children: ReactNode }) {
     setFlow((prev) => (prev ? { ...prev, ingredientsDirty: dirty } : prev));
   }, []);
 
-  const reset = useCallback(() => setFlow(null), []);
+  const startCapture = useCallback((barcode: string) => {
+    setCapture({ barcode, tableUri: null, ingredientsUri: null });
+  }, []);
+
+  const setCaptureTable = useCallback((uri: string | null) => {
+    setCapture((prev) => (prev ? { ...prev, tableUri: uri } : prev));
+  }, []);
+
+  const setCaptureIngredients = useCallback((uri: string | null) => {
+    setCapture((prev) => (prev ? { ...prev, ingredientsUri: uri } : prev));
+  }, []);
+
+  const reset = useCallback(() => {
+    setFlow(null);
+    setCapture(null);
+  }, []);
 
   const value = useMemo<ScanFlowStore>(
     () => ({
@@ -71,9 +100,25 @@ export function ScanFlowProvider({ children }: { children: ReactNode }) {
       setTableDirty,
       setIngredients,
       setIngredientsDirty,
+      capture,
+      startCapture,
+      setCaptureTable,
+      setCaptureIngredients,
       reset,
     }),
-    [flow, startFlow, setNutritionalTable, setTableDirty, setIngredients, setIngredientsDirty, reset],
+    [
+      flow,
+      startFlow,
+      setNutritionalTable,
+      setTableDirty,
+      setIngredients,
+      setIngredientsDirty,
+      capture,
+      startCapture,
+      setCaptureTable,
+      setCaptureIngredients,
+      reset,
+    ],
   );
 
   return <ScanFlowContext.Provider value={value}>{children}</ScanFlowContext.Provider>;
