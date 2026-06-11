@@ -1,8 +1,9 @@
 import { Pressable, Text, View } from 'react-native';
 
 const OPTIONS = [
-  { value: 'leigo', label: 'Linguagem simples' },
-  { value: 'tecnico', label: 'Linguagem técnica' },
+  { value: 'simples', label: 'Linguagem simples' },
+  { value: 'padrão', label: 'Linguagem padrão' },
+  { value: 'técnico', label: 'Linguagem técnica' },
 ] as const;
 
 type LanguageLevel = (typeof OPTIONS)[number]['value'];
@@ -10,15 +11,16 @@ type LanguageLevel = (typeof OPTIONS)[number]['value'];
 interface LanguageLevelPickerProps {
   value: LanguageLevel | null;
   onChange: (value: LanguageLevel) => void;
+  error?: string;
 }
 
-export function LanguageLevelPicker({ value, onChange }: LanguageLevelPickerProps) {
+export function LanguageLevelPicker({ value, onChange, error }: LanguageLevelPickerProps) {
   return (
     <View accessible accessibilityLabel="Nível de linguagem">
       <Text className="text-sm font-medium text-neutral-600 mb-2" allowFontScaling>
         Nível de linguagem
       </Text>
-      <View className="flex-row gap-2">
+      <View className="flex-row flex-wrap gap-2">
         {OPTIONS.map((opt) => {
           const selected = value === opt.value;
           return (
@@ -46,6 +48,15 @@ export function LanguageLevelPicker({ value, onChange }: LanguageLevelPickerProp
           );
         })}
       </View>
+      {error ? (
+        <Text
+          className="text-xs text-feedback-error mt-1.5"
+          accessibilityLiveRegion="assertive"
+          allowFontScaling
+        >
+          {error}
+        </Text>
+      ) : null}
     </View>
   );
 }
