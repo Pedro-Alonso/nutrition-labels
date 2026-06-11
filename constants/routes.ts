@@ -4,7 +4,8 @@ export const ROUTES = {
   LOGIN: '/(auth)/login',
   REGISTER: '/(auth)/register',
 
-  // App
+  // App — tabs aninhadas em (tabs); scan é screen full-screen fora das tabs.
+  // O grupo (tabs) é transparente na URL, então os paths abaixo não o incluem.
   HOME: '/(app)/(home)',
   SCAN_BARCODE: '/(app)/scan/barcode',
   SCAN_OCR: '/(app)/scan/ocr',
