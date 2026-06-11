@@ -11,6 +11,8 @@ import Animated, {
 interface BarcodeOverlayProps {
   /** Brevemente destaca o frame em verde ao detectar um código. */
   success?: boolean;
+  /** Distância do topo da instrução superior (px), para não cobrir a alternância. */
+  instructionTop?: number;
   onCancel: () => void;
 }
 
@@ -21,7 +23,7 @@ const FRAME_HEIGHT = '25%';
 const CORNER_SIZE = 24;
 const CORNER_BORDER = 3;
 
-export function BarcodeOverlay({ success = false, onCancel }: BarcodeOverlayProps) {
+export function BarcodeOverlay({ success = false, instructionTop = 64, onCancel }: BarcodeOverlayProps) {
   const scale = useSharedValue(1);
 
   useEffect(() => {
@@ -114,7 +116,7 @@ export function BarcodeOverlay({ success = false, onCancel }: BarcodeOverlayProp
       </Animated.View>
 
       {/* Instrução superior */}
-      <View className="absolute top-16 left-8 right-8 items-center">
+      <View className="absolute left-8 right-8 items-center" style={{ top: instructionTop }}>
         <View className="bg-black/50 rounded-full px-4 py-2">
           <Text className="text-base text-white text-center" allowFontScaling accessibilityRole="header">
             Aponte para o código de barras
