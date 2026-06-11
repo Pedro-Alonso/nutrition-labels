@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   antes da análise, com persistência apenas quando há edição.
 - Captura em duas etapas (tabela e ingredientes) com pré-visualização e
   confirmação, e opção de preenchimento manual em cada etapa.
+- Entrada manual do código de barras (digitação) como alternativa à câmera.
 
 ### Changed
 
