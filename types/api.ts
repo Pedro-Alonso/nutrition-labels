@@ -91,18 +91,6 @@ export interface ScanDetailResponse {
 
 // ─── Analysis ────────────────────────────────────────────────────────────────
 
-export interface AnalyzeRequest {
-  file: {
-    uri: string;
-    name: string;
-    type: string;
-  };
-  category_override?: string | null;
-  roi_enabled?: boolean;
-  stop_on_first_pass?: boolean;
-  postprocess?: boolean;
-}
-
 export interface IngredienteIdentificado {
   nome_lido: string;
   classe: string;
