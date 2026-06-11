@@ -13,6 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Botões de captura/galeria/ajuda na tela de foto do rótulo não respondiam ao
+  toque (a barra de abas cobria os controles). O fluxo de scan agora abre em
+  tela cheia, fora das abas, com respeito à área segura inferior.
+
 ### Removed
 
 ## [1.0.0] - 2026-06-11
