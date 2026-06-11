@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface OcrOverlayProps {
   capturing?: boolean;
@@ -17,6 +18,7 @@ export function OcrOverlay({
   onCategoryHintPress,
 }: OcrOverlayProps) {
   const isCaptureDisabled = capturing || disabled;
+  const insets = useSafeAreaInsets();
 
   return (
     <View className="absolute inset-0" pointerEvents="box-none">
@@ -50,7 +52,8 @@ export function OcrOverlay({
 
       {/* Controles inferiores */}
       <View
-        className="absolute bottom-12 left-8 right-8 flex-row items-center justify-between"
+        className="absolute bottom-0 left-8 right-8 flex-row items-center justify-between"
+        style={{ paddingBottom: insets.bottom + 16 }}
         pointerEvents="box-none"
       >
         <Pressable
