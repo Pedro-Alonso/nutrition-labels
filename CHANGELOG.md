@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Tipos e serviços para tabela nutricional e ingredientes estruturados, preview
   de OCR por duas imagens e persistência de produto editado.
+- Componentes de tabela nutricional e lista de ingredientes editáveis
+  (adicionar/editar/remover), com rótulos por origem (base/OCR/manual).
 
 ### Changed
 
