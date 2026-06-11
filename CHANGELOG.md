@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   de OCR por duas imagens e persistência de produto editado.
 - Componentes de tabela nutricional e lista de ingredientes editáveis
   (adicionar/editar/remover), com rótulos por origem (base/OCR/manual).
+- Telas de revisão editável da tabela nutricional e da lista de ingredientes
+  antes da análise, com persistência apenas quando há edição.
 
 ### Changed
 
