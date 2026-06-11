@@ -27,6 +27,10 @@ export default function ScanLayout() {
         <Stack.Screen name="ocr" options={{ title: 'Fotografar rótulo' }} />
         <Stack.Screen name="table-review" options={{ title: 'Revisar tabela', ...contentHeader }} />
         <Stack.Screen
+          name="ingredients-review"
+          options={{ title: 'Revisar ingredientes', ...contentHeader }}
+        />
+        <Stack.Screen
           name="result"
           options={{ title: 'Resultado', ...contentHeader, gestureEnabled: false }}
         />
