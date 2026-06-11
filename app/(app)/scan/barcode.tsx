@@ -12,11 +12,18 @@ import { LoadingOverlay } from '@/components/ui/LoadingOverlay';
 import { Toast } from '@/components/ui/Toast';
 import { ROUTES } from '@/constants/routes';
 import { productsService } from '@/services/api/products';
+import { useScanFlow } from '@/stores/scanFlowStore';
+import type { IngredientsData, NutritionalTableData, Product } from '@/types/api';
+
+// Dados vazios para iniciar a revisão quando o produto não traz tabela/lista.
+const EMPTY_TABLE: NutritionalTableData = { portion_description: null, columns: [], rows: [] };
+const EMPTY_INGREDIENTS: IngredientsData = { items: [] };
 
 export default function BarcodeScreen() {
   const [permission, requestPermission] = useCameraPermissions();
   const [feedback, setFeedback] = useState<'success' | 'error' | null>(null);
   const [toast, setToast] = useState<{ message: string; type: 'warning' | 'error' } | null>(null);
+  const { startFlow } = useScanFlow();
 
   const lookupMutation = useMutation({
     mutationFn: (barcode: string) => productsService.getProduct(barcode),
@@ -33,11 +40,20 @@ export default function BarcodeScreen() {
     setFeedback('success');
 
     lookupMutation.mutate(code, {
-      onSuccess: (product) => {
-        router.replace({
-          pathname: ROUTES.SCAN_RESULT,
-          params: { barcode: code, product: JSON.stringify(product) },
+      onSuccess: (product: Product) => {
+        // Produto já cadastrado: leva às telas de revisão pré-preenchidas com os
+        // dados da base. A análise atual vai junto — se nada for editado, o
+        // resultado é exibido sem PUT (lógica na tela de ingredientes).
+        startFlow({
+          barcode: code,
+          source: 'db',
+          mode: 'update',
+          productName: product.name,
+          nutritionalTable: product.nutritional_table ?? EMPTY_TABLE,
+          ingredients: product.ingredients ?? EMPTY_INGREDIENTS,
+          analysis: product.analysis,
         });
+        router.replace(ROUTES.SCAN_TABLE_REVIEW);
       },
       onError: (err) => {
         const status = err instanceof AxiosError ? err.response?.status : undefined;
