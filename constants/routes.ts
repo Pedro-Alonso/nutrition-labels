@@ -9,6 +9,8 @@ export const ROUTES = {
   HOME: '/(app)/(home)',
   SCAN_BARCODE: '/(app)/scan/barcode',
   SCAN_OCR: '/(app)/scan/ocr',
+  SCAN_TABLE_REVIEW: '/(app)/scan/table-review',
+  SCAN_INGREDIENTS_REVIEW: '/(app)/scan/ingredients-review',
   SCAN_RESULT: '/(app)/scan/result',
   HISTORY: '/(app)/history',
   HISTORY_DETAIL: (scanId: string) => `/(app)/history/${scanId}` as const,
