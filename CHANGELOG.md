@@ -15,11 +15,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (adicionar/editar/remover), com rótulos por origem (base/OCR/manual).
 - Telas de revisão editável da tabela nutricional e da lista de ingredientes
   antes da análise, com persistência apenas quando há edição.
+- Captura em duas etapas (tabela e ingredientes) com pré-visualização e
+  confirmação, e opção de preenchimento manual em cada etapa.
 
 ### Changed
 
 - Produtos já cadastrados agora abrem nas telas de revisão (tabela e
   ingredientes) para aprovação/edição antes de exibir a análise.
+- Produtos não cadastrados passam pelo OCR de duas imagens e abrem nas telas de
+  revisão pré-preenchidas antes da análise.
 
 ### Fixed
 

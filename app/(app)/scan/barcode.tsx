@@ -23,7 +23,7 @@ export default function BarcodeScreen() {
   const [permission, requestPermission] = useCameraPermissions();
   const [feedback, setFeedback] = useState<'success' | 'error' | null>(null);
   const [toast, setToast] = useState<{ message: string; type: 'warning' | 'error' } | null>(null);
-  const { startFlow } = useScanFlow();
+  const { startFlow, startCapture } = useScanFlow();
 
   const lookupMutation = useMutation({
     mutationFn: (barcode: string) => productsService.getProduct(barcode),
@@ -59,9 +59,12 @@ export default function BarcodeScreen() {
         const status = err instanceof AxiosError ? err.response?.status : undefined;
 
         if (status === 404) {
+          // Produto não cadastrado: inicia a captura em duas fotos (tabela e
+          // ingredientes) que alimentará o OCR antes das telas de revisão.
           setToast({ message: 'Produto não encontrado — fotografe o rótulo', type: 'warning' });
+          startCapture(code);
           setTimeout(() => {
-            router.push({ pathname: ROUTES.SCAN_OCR, params: { barcode: code } });
+            router.push(ROUTES.SCAN_TABLE_PHOTO);
           }, 1500);
           return;
         }
