@@ -35,10 +35,9 @@ export function getFormatLabel(format: string | null | undefined): string {
 }
 
 export const DIABETES_TYPE_LABELS: Record<string, string> = {
-  DM1: "Diabetes Tipo 1",
-  DM2: "Diabetes Tipo 2",
-  DMG: "Diabetes Gestacional",
-  outro: "Outro tipo",
+  type1: "Diabetes Tipo 1",
+  type2: "Diabetes Tipo 2",
+  dmg: "Diabetes Gestacional",
 };
 
 export function getDiabetesTypeLabel(type: string | null | undefined): string {
@@ -47,8 +46,9 @@ export function getDiabetesTypeLabel(type: string | null | undefined): string {
 }
 
 export const LANGUAGE_LEVEL_LABELS: Record<string, string> = {
-  leigo: "Linguagem simples",
-  tecnico: "Linguagem técnica",
+  simples: "Linguagem simples",
+  padrão: "Linguagem padrão",
+  técnico: "Linguagem técnica",
 };
 
 export function getLanguageLevelLabel(level: string | null | undefined): string {
