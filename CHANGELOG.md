@@ -18,6 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Produtos já cadastrados agora abrem nas telas de revisão (tabela e
+  ingredientes) para aprovação/edição antes de exibir a análise.
+
 ### Fixed
 
 - Rotas das telas em abas (início, histórico, perfil) não incluíam o grupo
