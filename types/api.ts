@@ -1,11 +1,13 @@
+import type { DiabetesType, LanguageLevel } from './domain';
+
 // ─── Auth ────────────────────────────────────────────────────────────────────
 
 export interface RegisterRequest {
   email: string;
   password: string;
   display_name?: string;
-  diabetes_type?: string | null;
-  language_level?: string | null;
+  diabetes_type: DiabetesType;
+  language_level: LanguageLevel;
 }
 
 export interface RegisterResponse {
@@ -52,8 +54,8 @@ export interface UserProfile {
 
 export interface UpdateProfileRequest {
   display_name?: string | null;
-  diabetes_type?: string | null;
-  language_level?: string | null;
+  diabetes_type?: DiabetesType;
+  language_level?: LanguageLevel;
 }
 
 export interface ScanSummary {

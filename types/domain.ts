@@ -8,8 +8,8 @@ export type RiskLevel =
   | 'INFORMATIVO'
   | 'NENHUM';
 
-export type DiabetesType = 'DM1' | 'DM2' | 'DMG' | 'outro';
+export type DiabetesType = 'type1' | 'type2' | 'dmg';
 
-export type LanguageLevel = 'leigo' | 'tecnico' | 'padrao';
+export type LanguageLevel = 'simples' | 'padrão' | 'técnico';
 
 export type DetectedFormat = 'table' | 'text' | 'ingredient';
