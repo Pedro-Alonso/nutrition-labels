@@ -4,16 +4,17 @@ export const ROUTES = {
   LOGIN: '/(auth)/login',
   REGISTER: '/(auth)/register',
 
-  // App — tabs aninhadas em (tabs); scan é screen full-screen fora das tabs.
-  // O grupo (tabs) é transparente na URL, então os paths abaixo não o incluem.
-  HOME: '/(app)/(home)',
+  // App — as tabs vivem no grupo (tabs); o scan é screen full-screen fora das
+  // tabs. O grupo (tabs) faz parte do href tipado (typedRoutes), então os paths
+  // das telas em abas precisam incluí-lo.
+  HOME: '/(app)/(tabs)/(home)',
   SCAN_BARCODE: '/(app)/scan/barcode',
   SCAN_OCR: '/(app)/scan/ocr',
   SCAN_TABLE_REVIEW: '/(app)/scan/table-review',
   SCAN_INGREDIENTS_REVIEW: '/(app)/scan/ingredients-review',
   SCAN_RESULT: '/(app)/scan/result',
-  HISTORY: '/(app)/history',
-  HISTORY_DETAIL: (scanId: string) => `/(app)/history/${scanId}` as const,
-  PROFILE: '/(app)/profile',
-  PROFILE_EDIT: '/(app)/profile/edit',
+  HISTORY: '/(app)/(tabs)/history',
+  HISTORY_DETAIL: (scanId: string) => `/(app)/(tabs)/history/${scanId}` as const,
+  PROFILE: '/(app)/(tabs)/profile',
+  PROFILE_EDIT: '/(app)/(tabs)/profile/edit',
 } as const;

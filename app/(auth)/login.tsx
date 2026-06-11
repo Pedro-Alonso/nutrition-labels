@@ -9,6 +9,7 @@ import { z } from 'zod';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Toast } from '@/components/ui/Toast';
+import { ROUTES } from '@/constants/routes';
 import { useAuth } from '@/hooks/useAuth';
 
 const loginSchema = z.object({
@@ -35,7 +36,7 @@ export default function LoginScreen() {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     try {
       await login(data);
-      router.replace('/(app)/(home)');
+      router.replace(ROUTES.HOME);
     } catch (error) {
       if (isAxiosError(error) && error.response?.status === 401) {
         setErrorToast('E-mail ou senha inválidos.');

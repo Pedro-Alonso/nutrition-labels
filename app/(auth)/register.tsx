@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/Input';
 import { Toast } from '@/components/ui/Toast';
 import { DiabetesTypePicker } from '@/components/auth/DiabetesTypePicker';
 import { LanguageLevelPicker } from '@/components/auth/LanguageLevelPicker';
+import { ROUTES } from '@/constants/routes';
 import { useAuth } from '@/hooks/useAuth';
 
 const registerSchema = z.object({
@@ -57,7 +58,7 @@ export default function RegisterScreen() {
         language_level: data.language_level,
       });
       await login({ email: data.email, password: data.password });
-      router.replace('/(app)/(home)');
+      router.replace(ROUTES.HOME);
     } catch (error) {
       if (isAxiosError(error)) {
         if (error.response?.status === 409) {

@@ -1,5 +1,6 @@
 import { Redirect } from 'expo-router';
 import { ActivityIndicator, Text, View } from 'react-native';
+import { ROUTES } from '@/constants/routes';
 import { useAuth } from '@/hooks/useAuth';
 
 export default function Index() {
@@ -22,8 +23,8 @@ export default function Index() {
   }
 
   if (isAuthenticated) {
-    return <Redirect href="/(app)/(home)" />;
+    return <Redirect href={ROUTES.HOME} />;
   }
 
-  return <Redirect href="/(auth)/welcome" />;
+  return <Redirect href={ROUTES.WELCOME} />;
 }
