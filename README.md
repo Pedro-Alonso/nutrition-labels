@@ -69,7 +69,7 @@ variáveis `EXPO_PUBLIC_*` são inlined no bundle.
 app/            # rotas (Expo Router): (auth)/ e (app)/ + scan/history/profile
 components/     # ui/ (primitivos), scan/, result/, auth/
 services/       # api/ (client axios + endpoints), storage (secure-store)
-hooks/          # wrappers TanStack Query (useAuth, useAnalyze, ...)
+hooks/          # wrappers TanStack Query (useAuth, useProduct, useOcrPreview, ...)
 stores/         # estado de auth
 types/          # tipos de API e domínio
 constants/      # cores, risco, rotas

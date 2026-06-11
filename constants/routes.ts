@@ -9,7 +9,6 @@ export const ROUTES = {
   // das telas em abas precisam incluí-lo.
   HOME: '/(app)/(tabs)/(home)',
   SCAN_BARCODE: '/(app)/scan/barcode',
-  SCAN_OCR: '/(app)/scan/ocr',
   SCAN_TABLE_PHOTO: '/(app)/scan/table-photo',
   SCAN_INGREDIENTS_PHOTO: '/(app)/scan/ingredients-photo',
   SCAN_TABLE_REVIEW: '/(app)/scan/table-review',
