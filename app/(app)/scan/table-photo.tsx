@@ -3,17 +3,19 @@ import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import { Redirect, router } from 'expo-router';
 import { useRef, useState } from 'react';
-import { Linking, Text, View } from 'react-native';
+import { Linking, Text, useWindowDimensions, View } from 'react-native';
 import { OcrOverlay } from '@/components/scan/OcrOverlay';
 import { Button } from '@/components/ui/Button';
 import { Toast } from '@/components/ui/Toast';
 import { ROUTES } from '@/constants/routes';
 import { useScanFlow } from '@/stores/scanFlowStore';
+import { cropToPreviewAspect } from '@/utils/cropPhoto';
 
 type Phase = 'camera' | 'capturing' | 'preview';
 
 export default function TablePhotoScreen() {
   const { capture, setCaptureTable } = useScanFlow();
+  const { width: screenWidth, height: screenHeight } = useWindowDimensions();
   const [permission, requestPermission] = useCameraPermissions();
   const cameraRef = useRef<CameraView>(null);
   const [phase, setPhase] = useState<Phase>('camera');
@@ -34,7 +36,8 @@ export default function TablePhotoScreen() {
     try {
       const photo = await cameraRef.current.takePictureAsync({ quality: 0.8 });
       if (!photo?.uri) throw new Error('Falha ao capturar foto');
-      setPhotoUri(photo.uri);
+      const uri = await cropToPreviewAspect(photo.uri, photo.width, photo.height, screenWidth, screenHeight);
+      setPhotoUri(uri);
       setPhase('preview');
     } catch {
       setErrorMessage('Não foi possível capturar a foto. Tente novamente.');
