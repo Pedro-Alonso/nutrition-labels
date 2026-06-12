@@ -106,6 +106,7 @@ export interface IngredientAnalysis {
   nao_identificados: string[];
   high_risk_ingredients: string[];
   safe_sweeteners: string[];
+  natural_language_summary?: string | null;
 }
 
 export interface OcrAttempt {

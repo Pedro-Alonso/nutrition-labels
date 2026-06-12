@@ -45,7 +45,7 @@ export default function ResultScreen() {
       barcode: params.barcode || product?.barcode || null,
       riskLevel: (analysis?.risco_global as RiskLevel) ?? 'NENHUM',
       passed: analyzeResponse?.passed ?? null,
-      llmSummary: analyzeResponse?.llm_summary ?? null,
+      llmSummary: analysis?.natural_language_summary ?? analyzeResponse?.llm_summary ?? null,
       ingredients: analysis?.ingredientes_identificados ?? [],
       highRiskIngredients: analysis?.high_risk_ingredients ?? [],
       safeSweeteners: analysis?.safe_sweeteners ?? [],

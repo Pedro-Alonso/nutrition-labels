@@ -46,7 +46,7 @@ export default function HistoryDetailScreen() {
     return {
       riskLevel: ((scan?.risco_global ?? analysis?.risco_global) as RiskLevel) ?? 'NENHUM',
       passed: scan?.passed ?? null,
-      llmSummary: result?.llm_summary ?? null,
+      llmSummary: result?.llm_summary ?? analysis?.natural_language_summary ?? null,
       ingredients: analysis?.ingredientes_identificados ?? [],
       highRiskIngredients: analysis?.high_risk_ingredients ?? [],
       safeSweeteners: analysis?.safe_sweeteners ?? [],
