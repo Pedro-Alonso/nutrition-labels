@@ -1,6 +1,7 @@
 import { Redirect, router } from 'expo-router';
 import { useState } from 'react';
-import { ScrollView, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { EditableIngredientList } from '@/components/scan/EditableIngredientList';
 import { Button } from '@/components/ui/Button';
 import { ErrorMessage } from '@/components/ui/ErrorMessage';
@@ -26,6 +27,7 @@ function buildProduct(flow: ScanFlowData, analysis: IngredientAnalysis | null): 
 export default function IngredientsReviewScreen() {
   const { flow, dirty, setIngredients, setIngredientsDirty, reset } = useScanFlow();
   const upsert = useUpsertProduct();
+  const insets = useSafeAreaInsets();
   const [error, setError] = useState<string | null>(null);
 
   // Acesso direto à rota sem fluxo ativo: volta ao início do scan.
@@ -66,7 +68,11 @@ export default function IngredientsReviewScreen() {
   };
 
   return (
-    <View className="flex-1 bg-neutral-50 dark:bg-dark-bg">
+    <KeyboardAvoidingView
+      className="flex-1 bg-neutral-50 dark:bg-dark-bg"
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={insets.top + 56}
+    >
       <ScrollView
         contentContainerStyle={{ padding: 16, paddingBottom: 160 }}
         keyboardShouldPersistTaps="handled"
@@ -97,6 +103,6 @@ export default function IngredientsReviewScreen() {
       </View>
 
       {upsert.isPending && <LoadingOverlay label="Analisando…" />}
-    </View>
+    </KeyboardAvoidingView>
   );
 }

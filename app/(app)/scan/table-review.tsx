@@ -1,5 +1,6 @@
 import { Redirect, router } from 'expo-router';
-import { ScrollView, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { EditableNutritionTable } from '@/components/scan/EditableNutritionTable';
 import { Button } from '@/components/ui/Button';
 import { ROUTES } from '@/constants/routes';
@@ -7,12 +8,17 @@ import { useScanFlow } from '@/stores/scanFlowStore';
 
 export default function TableReviewScreen() {
   const { flow, setNutritionalTable, setTableDirty } = useScanFlow();
+  const insets = useSafeAreaInsets();
 
   // Acesso direto à rota sem fluxo ativo: volta ao início do scan.
   if (!flow) return <Redirect href={ROUTES.SCAN_BARCODE} />;
 
   return (
-    <View className="flex-1 bg-neutral-50 dark:bg-dark-bg">
+    <KeyboardAvoidingView
+      className="flex-1 bg-neutral-50 dark:bg-dark-bg"
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={insets.top + 56}
+    >
       <ScrollView
         contentContainerStyle={{ padding: 16, paddingBottom: 120 }}
         keyboardShouldPersistTaps="handled"
@@ -34,6 +40,6 @@ export default function TableReviewScreen() {
           Confirmar
         </Button>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
