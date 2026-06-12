@@ -9,9 +9,9 @@ export default function TabsLayout() {
 
   return (
     <Tabs
-      sceneContainerStyle={{ paddingTop: insets.top }}
       screenOptions={{
         headerShown: false,
+        sceneStyle: { paddingTop: insets.top },
         tabBarActiveTintColor: '#059669',
         tabBarInactiveTintColor: '#9CA3AF',
         tabBarLabelStyle: { fontSize: 12, fontWeight: '500' },
