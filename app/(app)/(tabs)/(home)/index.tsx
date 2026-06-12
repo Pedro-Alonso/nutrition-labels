@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { Pressable, RefreshControl, ScrollView, Text, View } from 'react-native';
 import { ScanSummaryCard, ScanSummaryCardSkeleton } from '@/components/result/ScanSummaryCard';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { ErrorMessage } from '@/components/ui/ErrorMessage';
@@ -12,13 +12,18 @@ import { useScans } from '@/hooks/useScans';
 
 export default function HomeScreen() {
   const { data: user } = useMe();
-  const { data, isLoading, isError, refetch } = useScans({ per_page: 3 });
+  const { data, isLoading, isError, refetch, isRefetching } = useScans({ per_page: 3 });
 
   const firstName = user?.display_name?.trim().split(' ')[0] || 'visitante';
 
   return (
     <View className="flex-1 bg-neutral-50">
-      <ScrollView contentContainerStyle={{ paddingBottom: 32 }}>
+      <ScrollView
+        contentContainerStyle={{ paddingBottom: 32 }}
+        refreshControl={
+          <RefreshControl refreshing={isRefetching} onRefresh={refetch} colors={['#10B981']} tintColor="#10B981" />
+        }
+      >
         <View
           className="bg-white px-4 pt-6 pb-4 border-b border-neutral-100"
           accessible

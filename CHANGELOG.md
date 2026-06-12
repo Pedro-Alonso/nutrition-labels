@@ -9,6 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Pull-to-refresh na Home, recarregando as análises recentes ao puxar a tela
+  para baixo.
+
+### Changed
+
+### Fixed
+
+### Removed
+
+## [1.1.0] - 2026-06-11
+
+### Added
+
 - Tipos e serviços para tabela nutricional e ingredientes estruturados, preview
   de OCR por duas imagens e persistência de produto editado.
 - Componentes de tabela nutricional e lista de ingredientes editáveis
