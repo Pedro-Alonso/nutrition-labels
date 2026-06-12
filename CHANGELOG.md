@@ -18,6 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Captura em duas etapas (tabela e ingredientes) com pré-visualização e
   confirmação, e opção de preenchimento manual em cada etapa.
 - Entrada manual do código de barras (digitação) como alternativa à câmera.
+- Documentação de referência (JSDoc) em cada método dos serviços de API
+  (auth, users, products): verbo + rota, autenticação, request/response e
+  códigos de status.
 
 ### Changed
 
@@ -40,6 +43,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Tela de captura única e código do fluxo de OCR antigo substituídos pelo fluxo
   de duas etapas com revisão editável.
+- Comentários narrativos do código-fonte e arquivos `.gitkeep` obsoletos
+  (todas as pastas já têm arquivos reais).
 
 ## [1.0.0] - 2026-06-11
 
