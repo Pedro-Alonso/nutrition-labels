@@ -17,6 +17,7 @@
     },
     "android": {
       "versionCode": 1,
+      "softwareKeyboardLayoutMode": "pan",
       "permissions": [
         "android.permission.CAMERA",
         "android.permission.CAMERA",
