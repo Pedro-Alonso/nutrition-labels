@@ -38,6 +38,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+- Tela de captura única e código do fluxo de OCR antigo substituídos pelo fluxo
+  de duas etapas com revisão editável.
+
 ## [1.0.0] - 2026-06-11
 
 ### Added
