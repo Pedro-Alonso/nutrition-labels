@@ -21,9 +21,9 @@ export default function ScanLayout() {
           headerShadowVisible: false,
         }}
       >
-        <Stack.Screen name="barcode" options={{ title: 'Escanear produto' }} />
-        <Stack.Screen name="table-photo" options={{ title: 'Tabela nutricional' }} />
-        <Stack.Screen name="ingredients-photo" options={{ title: 'Lista de ingredientes' }} />
+        <Stack.Screen name="barcode" options={{ headerTitle: '' }} />
+        <Stack.Screen name="table-photo" options={{ headerTitle: '' }} />
+        <Stack.Screen name="ingredients-photo" options={{ headerTitle: '' }} />
         <Stack.Screen name="table-review" options={{ title: 'Revisar tabela', ...contentHeader }} />
         <Stack.Screen
           name="ingredients-review"

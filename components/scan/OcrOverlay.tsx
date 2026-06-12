@@ -111,8 +111,8 @@ export function OcrOverlay({
   // ── Fase de câmera: instrução, frame-guia e controles ──
   return (
     <View className="absolute inset-0" pointerEvents="box-none">
-      {/* Instrução superior */}
-      <View className="absolute top-16 left-6 right-6">
+      {/* Instrução superior — abaixo do header transparente + safe area */}
+      <View className="absolute left-6 right-6" style={{ top: insets.top + 56 }}>
         <View className="bg-black/60 rounded-xl px-4 py-3">
           <Text
             className="text-base text-white font-medium text-center"
