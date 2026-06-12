@@ -8,6 +8,7 @@ export interface ScanFlowData {
   // create → POST (produto novo, vindo do OCR); update → PUT (produto existente).
   mode: 'create' | 'update';
   productName: string | null;
+  brand: string | null;
   nutritionalTable: NutritionalTableData;
   ingredients: IngredientsData;
   // Análise já disponível (caminho do banco). null no caminho OCR até persistir.
@@ -21,6 +22,8 @@ interface ScanFlowState extends ScanFlowData {
 
 export interface ScanCapture {
   barcode: string;
+  productName: string | null;
+  brand: string | null;
   tableUri: string | null;
   ingredientsUri: string | null;
 }
@@ -34,10 +37,13 @@ export interface ScanFlowStore {
   setTableDirty: (dirty: boolean) => void;
   setIngredients: (ingredients: IngredientsData) => void;
   setIngredientsDirty: (dirty: boolean) => void;
+  setProductName: (name: string) => void;
+  setProductBrand: (brand: string) => void;
   capture: ScanCapture | null;
   startCapture: (barcode: string) => void;
   setCaptureTable: (uri: string | null) => void;
   setCaptureIngredients: (uri: string | null) => void;
+  setCaptureMetadata: (productName: string, brand: string) => void;
   reset: () => void;
 }
 
@@ -67,8 +73,16 @@ export function ScanFlowProvider({ children }: { children: ReactNode }) {
     setFlow((prev) => (prev ? { ...prev, ingredientsDirty: dirty } : prev));
   }, []);
 
+  const setProductName = useCallback((name: string) => {
+    setFlow((prev) => (prev ? { ...prev, productName: name } : prev));
+  }, []);
+
+  const setProductBrand = useCallback((brand: string) => {
+    setFlow((prev) => (prev ? { ...prev, brand } : prev));
+  }, []);
+
   const startCapture = useCallback((barcode: string) => {
-    setCapture({ barcode, tableUri: null, ingredientsUri: null });
+    setCapture({ barcode, productName: null, brand: null, tableUri: null, ingredientsUri: null });
   }, []);
 
   const setCaptureTable = useCallback((uri: string | null) => {
@@ -77,6 +91,10 @@ export function ScanFlowProvider({ children }: { children: ReactNode }) {
 
   const setCaptureIngredients = useCallback((uri: string | null) => {
     setCapture((prev) => (prev ? { ...prev, ingredientsUri: uri } : prev));
+  }, []);
+
+  const setCaptureMetadata = useCallback((productName: string, brand: string) => {
+    setCapture((prev) => (prev ? { ...prev, productName, brand } : prev));
   }, []);
 
   const reset = useCallback(() => {
@@ -93,10 +111,13 @@ export function ScanFlowProvider({ children }: { children: ReactNode }) {
       setTableDirty,
       setIngredients,
       setIngredientsDirty,
+      setProductName,
+      setProductBrand,
       capture,
       startCapture,
       setCaptureTable,
       setCaptureIngredients,
+      setCaptureMetadata,
       reset,
     }),
     [
@@ -106,10 +127,13 @@ export function ScanFlowProvider({ children }: { children: ReactNode }) {
       setTableDirty,
       setIngredients,
       setIngredientsDirty,
+      setProductName,
+      setProductBrand,
       capture,
       startCapture,
       setCaptureTable,
       setCaptureIngredients,
+      setCaptureMetadata,
       reset,
     ],
   );
