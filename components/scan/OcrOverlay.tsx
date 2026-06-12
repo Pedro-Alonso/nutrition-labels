@@ -7,7 +7,7 @@ type Phase = 'camera' | 'preview';
 interface OcrOverlayProps {
   // Fase atual: controles da câmera ou confirmação da foto capturada.
   phase?: Phase;
-  // Texto-guia superior (default mantém o uso da tela única antiga).
+  // Texto-guia superior.
   title?: string;
   subtitle?: string;
   // Legenda do frame-guia central.
@@ -25,7 +25,7 @@ interface OcrOverlayProps {
   onGalleryPress: () => void;
   // Botão "Manual": pula a foto e segue para o preenchimento manual.
   onManualPress?: () => void;
-  // Botão de ajuda (tela antiga). Só aparece se onManualPress não for passado.
+  // Botão de ajuda. Só aparece se onManualPress não for passado.
   onCategoryHintPress?: () => void;
 }
 

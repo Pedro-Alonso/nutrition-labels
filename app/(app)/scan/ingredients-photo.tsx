@@ -16,8 +16,6 @@ import type { ImageUpload, IngredientsData, NutritionalTableData } from '@/types
 
 type Phase = 'camera' | 'capturing' | 'preview' | 'processing';
 
-// Dados vazios para abrir a revisão quando o OCR não retorna tabela/lista ou
-// quando a etapa foi preenchida manualmente.
 const EMPTY_TABLE: NutritionalTableData = { portion_description: null, columns: [], rows: [] };
 const EMPTY_INGREDIENTS: IngredientsData = { items: [] };
 

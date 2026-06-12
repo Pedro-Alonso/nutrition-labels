@@ -36,8 +36,6 @@ export default function TabsLayout() {
           ),
         }}
         listeners={{
-          // O fluxo de scan vive fora das tabs (full-screen). O botão central não
-          // navega para uma tab: ele abre o wizard de scan por cima da tab bar.
           tabPress: (e) => {
             e.preventDefault();
             router.push(ROUTES.SCAN_BARCODE);

@@ -2,10 +2,6 @@ import { createContext, useCallback, useContext, useMemo, useState, type ReactNo
 import type { IngredientAnalysis, IngredientsData, NutritionalTableData } from '@/types/api';
 import type { ScanSource } from '@/types/domain';
 
-// Estado compartilhado do wizard de scan (telas de revisão). Mantém a tabela e
-// os ingredientes editados entre as telas sem serializar dados pesados nos
-// params de navegação.
-
 export interface ScanFlowData {
   barcode: string;
   source: ScanSource;
@@ -23,9 +19,6 @@ interface ScanFlowState extends ScanFlowData {
   ingredientsDirty: boolean;
 }
 
-// Estado da etapa de captura (caminho OCR, barcode 404). Acumula as URIs das
-// duas fotos entre as telas table-photo → ingredients-photo. URI null numa etapa
-// significa que o usuário optou pelo preenchimento manual dela.
 export interface ScanCapture {
   barcode: string;
   tableUri: string | null;

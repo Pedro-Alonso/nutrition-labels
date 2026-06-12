@@ -50,9 +50,6 @@ export default function BarcodeScreen() {
 
     lookupMutation.mutate(code, {
       onSuccess: (product: Product) => {
-        // Produto já cadastrado: leva às telas de revisão pré-preenchidas com os
-        // dados da base. A análise atual vai junto — se nada for editado, o
-        // resultado é exibido sem PUT (lógica na tela de ingredientes).
         startFlow({
           barcode: code,
           source: 'db',
@@ -68,8 +65,6 @@ export default function BarcodeScreen() {
         const status = err instanceof AxiosError ? err.response?.status : undefined;
 
         if (status === 404) {
-          // Produto não cadastrado: inicia a captura em duas fotos (tabela e
-          // ingredientes) que alimentará o OCR antes das telas de revisão.
           setToast({ message: 'Produto não encontrado — fotografe o rótulo', type: 'warning' });
           startCapture(code);
           setTimeout(() => {

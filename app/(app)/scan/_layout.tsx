@@ -1,8 +1,6 @@
 import { Stack } from 'expo-router';
 import { ScanFlowProvider } from '@/stores/scanFlowStore';
 
-// Cabeçalho claro para as telas de conteúdo (revisão/resultado), em contraste
-// com o cabeçalho transparente sobre a câmera (barcode/fotos do rótulo).
 const contentHeader = {
   headerTransparent: false,
   headerStyle: { backgroundColor: '#FFFFFF' },

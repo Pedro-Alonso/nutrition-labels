@@ -48,8 +48,6 @@ export default function IngredientsReviewScreen() {
       return;
     }
 
-    // Caso contrário (edição ou caminho OCR sem análise prévia): persiste e usa
-    // a análise retornada pelo servidor.
     upsert.mutate(
       {
         barcode: flow.barcode,
