@@ -3,10 +3,12 @@ import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { EditableIngredientList } from '@/components/scan/EditableIngredientList';
+import { ReviewScrollProvider } from '@/components/scan/ReviewScrollContext';
 import { Button } from '@/components/ui/Button';
 import { ErrorMessage } from '@/components/ui/ErrorMessage';
 import { LoadingOverlay } from '@/components/ui/LoadingOverlay';
 import { ROUTES } from '@/constants/routes';
+import { useReviewAutoScroll } from '@/hooks/useReviewAutoScroll';
 import { useUpsertProduct } from '@/hooks/useUpsertProduct';
 import type { IngredientAnalysis, Product } from '@/types/api';
 import { useScanFlow, type ScanFlowData } from '@/stores/scanFlowStore';
@@ -28,6 +30,7 @@ export default function IngredientsReviewScreen() {
   const { flow, dirty, setIngredients, setIngredientsDirty, reset } = useScanFlow();
   const upsert = useUpsertProduct();
   const insets = useSafeAreaInsets();
+  const { scrollRef, scrollToInput } = useReviewAutoScroll();
   const [error, setError] = useState<string | null>(null);
 
   // Acesso direto à rota sem fluxo ativo: volta ao início do scan.
@@ -73,23 +76,26 @@ export default function IngredientsReviewScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={insets.top + 56}
     >
-      <ScrollView
-        contentContainerStyle={{ padding: 16, paddingBottom: 160 }}
-        keyboardShouldPersistTaps="handled"
-      >
-        <EditableIngredientList
-          value={flow.ingredients}
-          source={flow.source}
-          onChange={setIngredients}
-          onDirtyChange={setIngredientsDirty}
-        />
+      <ReviewScrollProvider value={scrollToInput}>
+        <ScrollView
+          ref={scrollRef}
+          contentContainerStyle={{ padding: 16, paddingBottom: 160 }}
+          keyboardShouldPersistTaps="handled"
+        >
+          <EditableIngredientList
+            value={flow.ingredients}
+            source={flow.source}
+            onChange={setIngredients}
+            onDirtyChange={setIngredientsDirty}
+          />
 
-        {error && (
-          <View className="mt-4">
-            <ErrorMessage message={error} onRetry={handleConfirm} />
-          </View>
-        )}
-      </ScrollView>
+          {error && (
+            <View className="mt-4">
+              <ErrorMessage message={error} onRetry={handleConfirm} />
+            </View>
+          )}
+        </ScrollView>
+      </ReviewScrollProvider>
 
       <View className="absolute bottom-0 left-0 right-0 bg-white dark:bg-dark-card border-t border-neutral-100 dark:border-dark-surface px-4 pt-3 pb-6 shadow-lg">
         <Button

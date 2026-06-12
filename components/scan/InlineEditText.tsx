@@ -1,4 +1,6 @@
+import { useRef } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
+import { useReviewScroll } from './ReviewScrollContext';
 
 interface InlineEditTextProps {
   value: string;
@@ -32,14 +34,19 @@ export function InlineEditText({
   keyboardType = 'default',
   autoCapitalize = 'sentences',
 }: InlineEditTextProps) {
+  const inputRef = useRef<TextInput>(null);
+  const scrollToInput = useReviewScroll();
+
   if (editing) {
     return (
       <View className={`justify-center ${containerClassName}`} style={{ minHeight: 44 }}>
         <TextInput
+          ref={inputRef}
           value={value}
           onChangeText={onChangeText}
           onBlur={onEndEdit}
           onSubmitEditing={onEndEdit}
+          onFocus={() => scrollToInput?.(inputRef)}
           autoFocus
           allowFontScaling
           keyboardType={keyboardType}
