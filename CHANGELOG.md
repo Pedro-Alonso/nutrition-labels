@@ -16,6 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Telas de revisão (tabela e ingredientes) rolam automaticamente até o campo
+  em edição, mantendo-o visível acima do teclado.
+
 ### Removed
 
 ## [1.1.0] - 2026-06-11
