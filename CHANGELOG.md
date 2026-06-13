@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Pull-to-refresh na Home, recarregando as análises recentes ao puxar a tela
   para baixo.
+- Passo obrigatório de identificação do produto (nome e marca) logo após a
+  leitura do código de barras, para produtos novos e já cadastrados — exibido
+  junto ao nome na tela de resultado.
 
 ### Changed
 
