@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Etapa de recorte manual por gestos após a confirmação da foto (tabela e
+  ingredientes): permite ajustar a área enviada para o OCR antes do envio,
+  com opção de pular e manter o recorte automático.
 - Pull-to-refresh na Home, recarregando as análises recentes ao puxar a tela
   para baixo.
 - Passo obrigatório de identificação do produto (nome e marca) logo após a
