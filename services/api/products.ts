@@ -35,6 +35,16 @@ export const productsService = {
     apiClient.put<Product>(`/products/${barcode}`, data).then((r) => r.data),
 
   /**
+   * `POST /products/{barcode}/scan` — requer Bearer.
+   * Registra a leitura no histórico do usuário (dedupe por barcode — reler sobe
+   * a entrada ao topo) e retorna `Product` com `analysis.natural_language_summary`
+   * já preenchido (gerado ou reaproveitado do cache).
+   * Status: 200 ok · 401 token inválido · 404 produto não encontrado.
+   */
+  scanProduct: (barcode: string) =>
+    apiClient.post<Product>(`/products/${barcode}/scan`).then((r) => r.data),
+
+  /**
    * `GET /products/{barcode}/analysis` — público (sem token).
    * Retorna `IngredientAnalysis` (análise clínica DM dos ingredientes).
    * Status: 200 ok · 404 produto inexistente ou sem lista de ingredientes ·
