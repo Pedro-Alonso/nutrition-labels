@@ -13,7 +13,7 @@ import { ROUTES } from '@/constants/routes';
 import { useAuth } from '@/hooks/useAuth';
 
 const loginSchema = z.object({
-  email: z.string().min(1, 'Informe seu e-mail.').email('Informe um e-mail válido.'),
+  email: z.string().trim().min(1, 'Informe seu e-mail.').email('Informe um e-mail válido.'),
   password: z.string().min(1, 'Informe sua senha.'),
 });
 

@@ -16,8 +16,8 @@ import { ROUTES } from '@/constants/routes';
 import { useAuth } from '@/hooks/useAuth';
 
 const registerSchema = z.object({
-  display_name: z.string().optional(),
-  email: z.string().min(1, 'Informe seu e-mail.').email('Informe um e-mail válido.'),
+  display_name: z.string().trim().optional(),
+  email: z.string().trim().min(1, 'Informe seu e-mail.').email('Informe um e-mail válido.'),
   password: z.string().min(8, 'A senha deve ter pelo menos 8 caracteres.'),
   diabetes_type: z.enum(['type1', 'type2', 'dmg'], {
     message: 'Selecione o tipo de diabetes.',

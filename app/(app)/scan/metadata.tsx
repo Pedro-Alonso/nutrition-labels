@@ -13,8 +13,8 @@ import { useUpsertProduct } from '@/hooks/useUpsertProduct';
 import { useScanFlow } from '@/stores/scanFlowStore';
 
 const metadataSchema = z.object({
-  name: z.string().min(1, 'Informe o nome do produto.'),
-  brand: z.string().min(1, 'Informe a marca do produto.'),
+  name: z.string().trim().min(1, 'Informe o nome do produto.'),
+  brand: z.string().trim().min(1, 'Informe a marca do produto.'),
 });
 
 type MetadataFormData = z.infer<typeof metadataSchema>;

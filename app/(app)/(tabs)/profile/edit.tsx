@@ -17,7 +17,7 @@ const DIABETES_VALUES = ['type1', 'type2', 'dmg'] as const;
 const LANGUAGE_VALUES = ['simples', 'padrão', 'técnico'] as const;
 
 const editProfileSchema = z.object({
-  display_name: z.string(),
+  display_name: z.string().trim(),
   diabetes_type: z.enum(DIABETES_VALUES, { message: 'Selecione o tipo de diabetes.' }),
   language_level: z.enum(LANGUAGE_VALUES),
 });
