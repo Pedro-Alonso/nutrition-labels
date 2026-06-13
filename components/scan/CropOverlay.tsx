@@ -21,6 +21,21 @@ interface CropOverlayProps {
 
 // Tamanho mínimo (em px de tela) do retângulo de corte.
 const MIN_RECT_SIZE = 80;
+// Tamanho visual das alças e margem extra de toque (alça + 2*slop >= 44pt).
+const HANDLE_SIZE = 24;
+const HANDLE_HIT_SLOP = 10;
+
+function clamp(value: number, lo: number, hi: number): number {
+  'worklet';
+  return Math.min(Math.max(value, lo), hi);
+}
+
+interface EdgeFlags {
+  left?: boolean;
+  right?: boolean;
+  top?: boolean;
+  bottom?: boolean;
+}
 
 export function CropOverlay({ uri, imageWidth, imageHeight, onCrop, onSkip }: CropOverlayProps) {
   const insets = useSafeAreaInsets();
@@ -53,10 +68,15 @@ export function CropOverlay({ uri, imageWidth, imageHeight, onCrop, onSkip }: Cr
   const width = useSharedValue(renderWidth * 0.8);
   const height = useSharedValue(renderHeight * 0.55);
 
+  // Valores de início do gesto de mover (pan do corpo).
   const startX = useSharedValue(0);
   const startY = useSharedValue(0);
-  const startWidth = useSharedValue(0);
-  const startHeight = useSharedValue(0);
+
+  // Arestas do retângulo capturadas no início de um gesto de redimensionar.
+  const startLeft = useSharedValue(0);
+  const startTop = useSharedValue(0);
+  const startRight = useSharedValue(0);
+  const startBottom = useSharedValue(0);
 
   const panGesture = Gesture.Pan()
     .onStart(() => {
@@ -64,31 +84,41 @@ export function CropOverlay({ uri, imageWidth, imageHeight, onCrop, onSkip }: Cr
       startY.value = y.value;
     })
     .onUpdate((e) => {
-      const nextX = Math.max(minX, Math.min(startX.value + e.translationX, maxX - width.value));
-      const nextY = Math.max(minY, Math.min(startY.value + e.translationY, maxY - height.value));
-      x.value = nextX;
-      y.value = nextY;
+      x.value = clamp(startX.value + e.translationX, minX, maxX - width.value);
+      y.value = clamp(startY.value + e.translationY, minY, maxY - height.value);
     });
 
-  const pinchGesture = Gesture.Pinch()
-    .onStart(() => {
-      startX.value = x.value;
-      startY.value = y.value;
-      startWidth.value = width.value;
-      startHeight.value = height.value;
-    })
-    .onUpdate((e) => {
-      const centerX = startX.value + startWidth.value / 2;
-      const centerY = startY.value + startHeight.value / 2;
-      const nextWidth = Math.max(MIN_RECT_SIZE, Math.min(startWidth.value * e.scale, maxX - minX));
-      const nextHeight = Math.max(MIN_RECT_SIZE, Math.min(startHeight.value * e.scale, maxY - minY));
-      width.value = nextWidth;
-      height.value = nextHeight;
-      x.value = Math.max(minX, Math.min(centerX - nextWidth / 2, maxX - nextWidth));
-      y.value = Math.max(minY, Math.min(centerY - nextHeight / 2, maxY - nextHeight));
-    });
-
-  const composedGesture = Gesture.Simultaneous(panGesture, pinchGesture);
+  // Cada alça controla um subconjunto de arestas, mantendo as arestas opostas
+  // fixas (capturadas em onStart) — permite redimensionar livremente.
+  const makeEdgeGesture = (edges: EdgeFlags) =>
+    Gesture.Pan()
+      .hitSlop(HANDLE_HIT_SLOP)
+      .onStart(() => {
+        startLeft.value = x.value;
+        startTop.value = y.value;
+        startRight.value = x.value + width.value;
+        startBottom.value = y.value + height.value;
+      })
+      .onUpdate((e) => {
+        if (edges.left) {
+          const newLeft = clamp(startLeft.value + e.translationX, minX, startRight.value - MIN_RECT_SIZE);
+          x.value = newLeft;
+          width.value = startRight.value - newLeft;
+        }
+        if (edges.right) {
+          const newRight = clamp(startRight.value + e.translationX, startLeft.value + MIN_RECT_SIZE, maxX);
+          width.value = newRight - startLeft.value;
+        }
+        if (edges.top) {
+          const newTop = clamp(startTop.value + e.translationY, minY, startBottom.value - MIN_RECT_SIZE);
+          y.value = newTop;
+          height.value = startBottom.value - newTop;
+        }
+        if (edges.bottom) {
+          const newBottom = clamp(startBottom.value + e.translationY, startTop.value + MIN_RECT_SIZE, maxY);
+          height.value = newBottom - startTop.value;
+        }
+      });
 
   const rectStyle = useAnimatedStyle(() => ({
     left: x.value,
@@ -96,6 +126,50 @@ export function CropOverlay({ uri, imageWidth, imageHeight, onCrop, onSkip }: Cr
     width: width.value,
     height: height.value,
   }));
+
+  const topLeftStyle = useAnimatedStyle(() => ({
+    left: x.value - HANDLE_SIZE / 2,
+    top: y.value - HANDLE_SIZE / 2,
+  }));
+  const topStyle = useAnimatedStyle(() => ({
+    left: x.value + width.value / 2 - HANDLE_SIZE / 2,
+    top: y.value - HANDLE_SIZE / 2,
+  }));
+  const topRightStyle = useAnimatedStyle(() => ({
+    left: x.value + width.value - HANDLE_SIZE / 2,
+    top: y.value - HANDLE_SIZE / 2,
+  }));
+  const rightStyle = useAnimatedStyle(() => ({
+    left: x.value + width.value - HANDLE_SIZE / 2,
+    top: y.value + height.value / 2 - HANDLE_SIZE / 2,
+  }));
+  const bottomRightStyle = useAnimatedStyle(() => ({
+    left: x.value + width.value - HANDLE_SIZE / 2,
+    top: y.value + height.value - HANDLE_SIZE / 2,
+  }));
+  const bottomStyle = useAnimatedStyle(() => ({
+    left: x.value + width.value / 2 - HANDLE_SIZE / 2,
+    top: y.value + height.value - HANDLE_SIZE / 2,
+  }));
+  const bottomLeftStyle = useAnimatedStyle(() => ({
+    left: x.value - HANDLE_SIZE / 2,
+    top: y.value + height.value - HANDLE_SIZE / 2,
+  }));
+  const leftStyle = useAnimatedStyle(() => ({
+    left: x.value - HANDLE_SIZE / 2,
+    top: y.value + height.value / 2 - HANDLE_SIZE / 2,
+  }));
+
+  const handles = [
+    { style: topLeftStyle, gesture: makeEdgeGesture({ left: true, top: true }), label: 'Canto superior esquerdo' },
+    { style: topStyle, gesture: makeEdgeGesture({ top: true }), label: 'Borda superior' },
+    { style: topRightStyle, gesture: makeEdgeGesture({ right: true, top: true }), label: 'Canto superior direito' },
+    { style: rightStyle, gesture: makeEdgeGesture({ right: true }), label: 'Borda direita' },
+    { style: bottomRightStyle, gesture: makeEdgeGesture({ right: true, bottom: true }), label: 'Canto inferior direito' },
+    { style: bottomStyle, gesture: makeEdgeGesture({ bottom: true }), label: 'Borda inferior' },
+    { style: bottomLeftStyle, gesture: makeEdgeGesture({ left: true, bottom: true }), label: 'Canto inferior esquerdo' },
+    { style: leftStyle, gesture: makeEdgeGesture({ left: true }), label: 'Borda esquerda' },
+  ];
 
   const handleCrop = async () => {
     if (processing) return;
@@ -123,7 +197,7 @@ export function CropOverlay({ uri, imageWidth, imageHeight, onCrop, onSkip }: Cr
         accessibilityLabel="Foto capturada do rótulo"
       />
 
-      <GestureDetector gesture={composedGesture}>
+      <GestureDetector gesture={panGesture}>
         <Animated.View
           style={[
             { position: 'absolute', borderWidth: 2, borderColor: '#10B981', borderRadius: 8 },
@@ -132,9 +206,32 @@ export function CropOverlay({ uri, imageWidth, imageHeight, onCrop, onSkip }: Cr
           accessible
           accessibilityRole="adjustable"
           accessibilityLabel="Área de corte da foto"
-          accessibilityHint="Arraste para mover e use dois dedos para redimensionar o quadro"
+          accessibilityHint="Arraste para mover a área de corte"
         />
       </GestureDetector>
+
+      {handles.map((handle) => (
+        <GestureDetector key={handle.label} gesture={handle.gesture}>
+          <Animated.View
+            style={[
+              {
+                position: 'absolute',
+                width: HANDLE_SIZE,
+                height: HANDLE_SIZE,
+                borderRadius: HANDLE_SIZE / 2,
+                backgroundColor: '#FFFFFF',
+                borderWidth: 2,
+                borderColor: '#10B981',
+              },
+              handle.style,
+            ]}
+            accessible
+            accessibilityRole="adjustable"
+            accessibilityLabel={handle.label}
+            accessibilityHint="Arraste para redimensionar a área de corte"
+          />
+        </GestureDetector>
+      ))}
 
       <View className="absolute left-5 right-5" style={{ top: insets.top + 16 }}>
         <View className="bg-black/60 rounded-xl px-4 py-3">
@@ -142,7 +239,7 @@ export function CropOverlay({ uri, imageWidth, imageHeight, onCrop, onSkip }: Cr
             Ajuste a área da foto
           </Text>
           <Text className="text-sm text-white/70 text-center mt-1" allowFontScaling>
-            Arraste para mover e use dois dedos para redimensionar o quadro
+            Arraste os cantos e bordas para ajustar a área; arraste o centro para mover.
           </Text>
         </View>
       </View>
