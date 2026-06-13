@@ -1,5 +1,6 @@
-import { Redirect, router } from 'expo-router';
-import { KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { Redirect, router, Stack } from 'expo-router';
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { EditableNutritionTable } from '@/components/scan/EditableNutritionTable';
 import { ReviewScrollProvider } from '@/components/scan/ReviewScrollContext';
@@ -9,7 +10,7 @@ import { useReviewAutoScroll } from '@/hooks/useReviewAutoScroll';
 import { useScanFlow } from '@/stores/scanFlowStore';
 
 export default function TableReviewScreen() {
-  const { flow, setNutritionalTable, setTableDirty } = useScanFlow();
+  const { flow, tableRev, setNutritionalTable, setTableDirty } = useScanFlow();
   const insets = useSafeAreaInsets();
   const { scrollRef, scrollToInput } = useReviewAutoScroll();
 
@@ -22,6 +23,22 @@ export default function TableReviewScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={insets.top + 56}
     >
+      <Stack.Screen
+        options={{
+          headerRight: () => (
+            <Pressable
+              onPress={() => router.push({ pathname: ROUTES.SCAN_REOCR, params: { target: 'table' } })}
+              accessibilityRole="button"
+              accessibilityLabel="Refazer leitura da tabela com a câmera"
+              hitSlop={8}
+              className="p-2 -mr-2 min-h-[44px] min-w-[44px] items-center justify-center"
+            >
+              <Ionicons name="camera-outline" size={24} color="#111827" />
+            </Pressable>
+          ),
+        }}
+      />
+
       <ReviewScrollProvider value={scrollToInput}>
         <ScrollView
           ref={scrollRef}
@@ -29,6 +46,7 @@ export default function TableReviewScreen() {
           keyboardShouldPersistTaps="handled"
         >
           <EditableNutritionTable
+            key={tableRev}
             value={flow.nutritionalTable}
             source={flow.source}
             onChange={setNutritionalTable}

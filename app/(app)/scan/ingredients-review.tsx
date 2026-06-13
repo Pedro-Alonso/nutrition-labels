@@ -1,6 +1,7 @@
-import { Redirect, router } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+import { Redirect, router, Stack } from 'expo-router';
 import { useState } from 'react';
-import { KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { EditableIngredientList } from '@/components/scan/EditableIngredientList';
 import { ReviewScrollProvider } from '@/components/scan/ReviewScrollContext';
@@ -15,7 +16,7 @@ import type { Product } from '@/types/api';
 import { useScanFlow } from '@/stores/scanFlowStore';
 
 export default function IngredientsReviewScreen() {
-  const { flow, dirty, setIngredients, setIngredientsDirty, reset } = useScanFlow();
+  const { flow, dirty, ingredientsRev, setIngredients, setIngredientsDirty, reset } = useScanFlow();
   const upsert = useUpsertProduct();
   const scan = useScanProduct();
   const insets = useSafeAreaInsets();
@@ -95,6 +96,22 @@ export default function IngredientsReviewScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={insets.top + 56}
     >
+      <Stack.Screen
+        options={{
+          headerRight: () => (
+            <Pressable
+              onPress={() => router.push({ pathname: ROUTES.SCAN_REOCR, params: { target: 'ingredients' } })}
+              accessibilityRole="button"
+              accessibilityLabel="Refazer leitura dos ingredientes com a câmera"
+              hitSlop={8}
+              className="p-2 -mr-2 min-h-[44px] min-w-[44px] items-center justify-center"
+            >
+              <Ionicons name="camera-outline" size={24} color="#111827" />
+            </Pressable>
+          ),
+        }}
+      />
+
       <ReviewScrollProvider value={scrollToInput}>
         <ScrollView
           ref={scrollRef}
@@ -102,6 +119,7 @@ export default function IngredientsReviewScreen() {
           keyboardShouldPersistTaps="handled"
         >
           <EditableIngredientList
+            key={ingredientsRev}
             value={flow.ingredients}
             source={flow.source}
             onChange={setIngredients}
