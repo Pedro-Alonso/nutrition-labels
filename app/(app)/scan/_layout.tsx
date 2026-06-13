@@ -30,6 +30,7 @@ export default function ScanLayout() {
           name="ingredients-review"
           options={{ title: 'Revisar ingredientes', ...contentHeader }}
         />
+        <Stack.Screen name="reocr" options={{ headerTitle: '' }} />
         <Stack.Screen
           name="result"
           options={{ title: 'Resultado', ...contentHeader, gestureEnabled: false }}

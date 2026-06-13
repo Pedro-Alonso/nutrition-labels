@@ -14,6 +14,7 @@ export const ROUTES = {
   SCAN_INGREDIENTS_PHOTO: '/(app)/scan/ingredients-photo',
   SCAN_TABLE_REVIEW: '/(app)/scan/table-review',
   SCAN_INGREDIENTS_REVIEW: '/(app)/scan/ingredients-review',
+  SCAN_REOCR: '/(app)/scan/reocr',
   SCAN_RESULT: '/(app)/scan/result',
   HISTORY: '/(app)/(tabs)/history',
   HISTORY_DETAIL: (scanId: string) => `/(app)/(tabs)/history/${scanId}` as const,
