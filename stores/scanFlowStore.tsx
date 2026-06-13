@@ -18,6 +18,8 @@ export interface ScanFlowData {
 interface ScanFlowState extends ScanFlowData {
   tableDirty: boolean;
   ingredientsDirty: boolean;
+  // true se tabela/ingredientes foram substituídos via re-OCR na revisão.
+  ocrReapplied: boolean;
 }
 
 export interface ScanCapture {
@@ -30,13 +32,19 @@ export interface ScanCapture {
 
 export interface ScanFlowStore {
   flow: ScanFlowState | null;
-  // dirty acumulado: tabela OU ingredientes editados.
+  // dirty acumulado: tabela OU ingredientes editados, ou re-OCR aplicado.
   dirty: boolean;
+  // Revisões da tabela/ingredientes — incrementadas a cada re-OCR para forçar
+  // o remount dos editores (que só leem o valor inicial no mount).
+  tableRev: number;
+  ingredientsRev: number;
   startFlow: (data: ScanFlowData) => void;
   setNutritionalTable: (table: NutritionalTableData) => void;
   setTableDirty: (dirty: boolean) => void;
   setIngredients: (ingredients: IngredientsData) => void;
   setIngredientsDirty: (dirty: boolean) => void;
+  replaceNutritionalTable: (table: NutritionalTableData) => void;
+  replaceIngredients: (ingredients: IngredientsData) => void;
   setProductName: (name: string) => void;
   setProductBrand: (brand: string) => void;
   capture: ScanCapture | null;
@@ -52,9 +60,11 @@ const ScanFlowContext = createContext<ScanFlowStore | null>(null);
 export function ScanFlowProvider({ children }: { children: ReactNode }) {
   const [flow, setFlow] = useState<ScanFlowState | null>(null);
   const [capture, setCapture] = useState<ScanCapture | null>(null);
+  const [tableRev, setTableRev] = useState(0);
+  const [ingredientsRev, setIngredientsRev] = useState(0);
 
   const startFlow = useCallback((data: ScanFlowData) => {
-    setFlow({ ...data, tableDirty: false, ingredientsDirty: false });
+    setFlow({ ...data, tableDirty: false, ingredientsDirty: false, ocrReapplied: false });
   }, []);
 
   const setNutritionalTable = useCallback((table: NutritionalTableData) => {
@@ -71,6 +81,16 @@ export function ScanFlowProvider({ children }: { children: ReactNode }) {
 
   const setIngredientsDirty = useCallback((dirty: boolean) => {
     setFlow((prev) => (prev ? { ...prev, ingredientsDirty: dirty } : prev));
+  }, []);
+
+  const replaceNutritionalTable = useCallback((table: NutritionalTableData) => {
+    setFlow((prev) => (prev ? { ...prev, nutritionalTable: table, ocrReapplied: true } : prev));
+    setTableRev((rev) => rev + 1);
+  }, []);
+
+  const replaceIngredients = useCallback((ingredients: IngredientsData) => {
+    setFlow((prev) => (prev ? { ...prev, ingredients, ocrReapplied: true } : prev));
+    setIngredientsRev((rev) => rev + 1);
   }, []);
 
   const setProductName = useCallback((name: string) => {
@@ -105,12 +125,16 @@ export function ScanFlowProvider({ children }: { children: ReactNode }) {
   const value = useMemo<ScanFlowStore>(
     () => ({
       flow,
-      dirty: !!flow && (flow.tableDirty || flow.ingredientsDirty),
+      dirty: !!flow && (flow.tableDirty || flow.ingredientsDirty || flow.ocrReapplied),
+      tableRev,
+      ingredientsRev,
       startFlow,
       setNutritionalTable,
       setTableDirty,
       setIngredients,
       setIngredientsDirty,
+      replaceNutritionalTable,
+      replaceIngredients,
       setProductName,
       setProductBrand,
       capture,
@@ -122,11 +146,15 @@ export function ScanFlowProvider({ children }: { children: ReactNode }) {
     }),
     [
       flow,
+      tableRev,
+      ingredientsRev,
       startFlow,
       setNutritionalTable,
       setTableDirty,
       setIngredients,
       setIngredientsDirty,
+      replaceNutritionalTable,
+      replaceIngredients,
       setProductName,
       setProductBrand,
       capture,
