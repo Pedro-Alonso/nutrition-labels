@@ -9,26 +9,15 @@ import { ErrorMessage } from '@/components/ui/ErrorMessage';
 import { LoadingOverlay } from '@/components/ui/LoadingOverlay';
 import { ROUTES } from '@/constants/routes';
 import { useReviewAutoScroll } from '@/hooks/useReviewAutoScroll';
+import { useScanProduct } from '@/hooks/useScanProduct';
 import { useUpsertProduct } from '@/hooks/useUpsertProduct';
-import type { IngredientAnalysis, Product } from '@/types/api';
-import { useScanFlow, type ScanFlowData } from '@/stores/scanFlowStore';
-
-function buildProduct(flow: ScanFlowData, analysis: IngredientAnalysis | null): Product {
-  return {
-    barcode: flow.barcode,
-    name: flow.productName,
-    brand: flow.brand,
-    nutritional_table: flow.nutritionalTable,
-    ingredients: flow.ingredients,
-    analysis,
-    created_at: '',
-    updated_at: '',
-  };
-}
+import type { Product } from '@/types/api';
+import { useScanFlow } from '@/stores/scanFlowStore';
 
 export default function IngredientsReviewScreen() {
   const { flow, dirty, setIngredients, setIngredientsDirty, reset } = useScanFlow();
   const upsert = useUpsertProduct();
+  const scan = useScanProduct();
   const insets = useSafeAreaInsets();
   const { scrollRef, scrollToInput } = useReviewAutoScroll();
   const [error, setError] = useState<string | null>(null);
@@ -46,17 +35,44 @@ export default function IngredientsReviewScreen() {
 
   const handleConfirm = () => {
     setError(null);
+    const onError = () => setError('Não foi possível analisar o produto. Tente novamente.');
 
-    // Sem edição e com análise já em mãos (caminho do banco): pula a escrita.
-    if (!dirty && flow.analysis) {
-      goToResult(buildProduct(flow, flow.analysis));
+    // Caminho do banco: registra a leitura (histórico + resumo) antes de
+    // ir ao resultado, opcionalmente após salvar edições.
+    if (flow.mode === 'update') {
+      const registerScan = () => {
+        scan.mutate(flow.barcode, {
+          onSuccess: (product) => goToResult(product),
+          onError,
+        });
+      };
+
+      if (!dirty) {
+        registerScan();
+        return;
+      }
+
+      upsert.mutate(
+        {
+          barcode: flow.barcode,
+          mode: 'update',
+          data: {
+            name: flow.productName,
+            brand: flow.brand,
+            nutritional_table: flow.nutritionalTable,
+            ingredients: flow.ingredients,
+          },
+        },
+        { onSuccess: registerScan, onError },
+      );
       return;
     }
 
+    // Caminho OCR (produto novo): POST já gera resumo e registra histórico.
     upsert.mutate(
       {
         barcode: flow.barcode,
-        mode: flow.mode,
+        mode: 'create',
         data: {
           name: flow.productName,
           brand: flow.brand,
@@ -66,10 +82,12 @@ export default function IngredientsReviewScreen() {
       },
       {
         onSuccess: (product) => goToResult(product),
-        onError: () => setError('Não foi possível analisar o produto. Tente novamente.'),
+        onError,
       },
     );
   };
+
+  const isPending = upsert.isPending || scan.isPending;
 
   return (
     <KeyboardAvoidingView
@@ -102,14 +120,14 @@ export default function IngredientsReviewScreen() {
         <Button
           full
           onPress={handleConfirm}
-          loading={upsert.isPending}
+          loading={isPending}
           accessibilityLabel="Confirmar ingredientes e analisar o produto"
         >
           Confirmar e analisar
         </Button>
       </View>
 
-      {upsert.isPending && <LoadingOverlay label="Analisando…" />}
+      {isPending && <LoadingOverlay label="Analisando…" />}
     </KeyboardAvoidingView>
   );
 }
