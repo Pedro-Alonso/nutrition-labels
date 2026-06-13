@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+### Changed
+
+### Fixed
+
+### Removed
+
+## [1.2.0] - 2026-06-13
+
+### Added
+
 - Etapa de recorte manual por gestos após a confirmação da foto (tabela e
   ingredientes): permite ajustar a área enviada para o OCR antes do envio,
   com opção de pular e manter o recorte automático.
