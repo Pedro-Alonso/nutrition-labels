@@ -22,6 +22,7 @@ export default function ScanLayout() {
         }}
       >
         <Stack.Screen name="barcode" options={{ headerTitle: '' }} />
+        <Stack.Screen name="metadata" options={{ title: 'Dados do produto', ...contentHeader }} />
         <Stack.Screen name="table-photo" options={{ headerTitle: '' }} />
         <Stack.Screen name="ingredients-photo" options={{ headerTitle: '' }} />
         <Stack.Screen name="table-review" options={{ title: 'Revisar tabela', ...contentHeader }} />
