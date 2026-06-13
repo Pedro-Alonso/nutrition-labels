@@ -55,11 +55,12 @@ export default function BarcodeScreen() {
           source: 'db',
           mode: 'update',
           productName: product.name,
+          brand: product.brand,
           nutritionalTable: product.nutritional_table ?? EMPTY_TABLE,
           ingredients: product.ingredients ?? EMPTY_INGREDIENTS,
           analysis: product.analysis,
         });
-        router.replace(ROUTES.SCAN_TABLE_REVIEW);
+        router.replace(ROUTES.SCAN_METADATA);
       },
       onError: (err) => {
         const status = err instanceof AxiosError ? err.response?.status : undefined;
@@ -68,7 +69,7 @@ export default function BarcodeScreen() {
           setToast({ message: 'Produto não encontrado — fotografe o rótulo', type: 'warning' });
           startCapture(code);
           setTimeout(() => {
-            router.push(ROUTES.SCAN_TABLE_PHOTO);
+            router.push(ROUTES.SCAN_METADATA);
           }, 1500);
           return;
         }
