@@ -7,6 +7,51 @@ import type {
 } from '@/types/api';
 import { apiClient } from './client';
 
+/**
+ * Remove espaços em volta de strings antes de enviar ao backend. Aplica-se
+ * apenas aos campos presentes no payload (PUT é um patch parcial); strings
+ * vazias após o trim viram `null`, e linhas/itens vazios são descartados.
+ */
+function normalizeProductPayload(data: ProductCreateRequest): ProductCreateRequest {
+  const normalized: ProductCreateRequest = { ...data };
+
+  if ('name' in normalized) {
+    const trimmed = normalized.name?.trim() ?? null;
+    normalized.name = trimmed === '' ? null : trimmed;
+  }
+
+  if ('brand' in normalized) {
+    const trimmed = normalized.brand?.trim() ?? null;
+    normalized.brand = trimmed === '' ? null : trimmed;
+  }
+
+  if (normalized.nutritional_table) {
+    const table = normalized.nutritional_table;
+    const portion = table.portion_description?.trim() ?? null;
+    const rows = table.rows
+      .map((row) => ({
+        nutrient: row.nutrient.trim(),
+        values: row.values.map((v) => v.trim()),
+      }))
+      .filter((row) => row.nutrient !== '' || row.values.some((v) => v !== ''));
+
+    normalized.nutritional_table = {
+      ...table,
+      portion_description: portion === '' ? null : portion,
+      columns: table.columns.map((c) => c.trim()),
+      rows,
+    };
+  }
+
+  if (normalized.ingredients) {
+    normalized.ingredients = {
+      items: normalized.ingredients.items.map((i) => i.trim()).filter((i) => i !== ''),
+    };
+  }
+
+  return normalized;
+}
+
 export const productsService = {
   /**
    * `GET /products/{barcode}` — público (sem token).
@@ -23,7 +68,7 @@ export const productsService = {
    * Status: 201 criado · 401 token inválido · 409 barcode já existe (usar PUT).
    */
   createProduct: (barcode: string, data: ProductCreateRequest) =>
-    apiClient.post<Product>(`/products/${barcode}`, data).then((r) => r.data),
+    apiClient.post<Product>(`/products/${barcode}`, normalizeProductPayload(data)).then((r) => r.data),
 
   /**
    * `PUT /products/{barcode}` — requer Bearer.
@@ -32,7 +77,7 @@ export const productsService = {
    * Status: 200 ok · 401 token inválido · 404 produto não encontrado.
    */
   updateProduct: (barcode: string, data: ProductCreateRequest) =>
-    apiClient.put<Product>(`/products/${barcode}`, data).then((r) => r.data),
+    apiClient.put<Product>(`/products/${barcode}`, normalizeProductPayload(data)).then((r) => r.data),
 
   /**
    * `POST /products/{barcode}/scan` — requer Bearer.
