@@ -63,7 +63,7 @@ export async function cropToPreviewAspect(
 export async function cropToRect(uri: string, rect: CropRect): Promise<string> {
   try {
     const image = await ImageManipulator.manipulate(uri).crop(rect).renderAsync();
-    const result = await image.saveAsync({ compress: 0.8, format: SaveFormat.JPEG });
+    const result = await image.saveAsync({ compress: 0.9, format: SaveFormat.JPEG });
     return result.uri;
   } catch {
     return uri;
