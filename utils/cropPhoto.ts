@@ -1,5 +1,12 @@
 import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
 
+export interface CropRect {
+  originX: number;
+  originY: number;
+  width: number;
+  height: number;
+}
+
 /**
  * Recorta a foto capturada para a mesma proporção do preview da câmera
  * (tela cheia), centralizado.
@@ -42,6 +49,20 @@ export async function cropToPreviewAspect(
     const image = await ImageManipulator.manipulate(uri)
       .crop({ originX, originY, width: cropWidth, height: cropHeight })
       .renderAsync();
+    const result = await image.saveAsync({ compress: 0.8, format: SaveFormat.JPEG });
+    return result.uri;
+  } catch {
+    return uri;
+  }
+}
+
+/**
+ * Aplica um recorte manual (definido pelo usuário em `CropOverlay`) à foto
+ * capturada. Em qualquer falha, devolve a URI original sem recortar.
+ */
+export async function cropToRect(uri: string, rect: CropRect): Promise<string> {
+  try {
+    const image = await ImageManipulator.manipulate(uri).crop(rect).renderAsync();
     const result = await image.saveAsync({ compress: 0.8, format: SaveFormat.JPEG });
     return result.uri;
   } catch {
