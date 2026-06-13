@@ -17,6 +17,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Ler um produto já cadastrado agora registra a leitura no histórico
+  (subindo a entrada ao topo em releituras) e exibe o resumo em linguagem
+  natural gerado/recuperado do cache no momento da leitura.
+- Atualizar o perfil (tipo de diabetes/nível de linguagem) invalida o
+  histórico de leituras, para que resumos e riscos sejam regerados na
+  personalização atual.
+
 ### Fixed
 
 - Telas de revisão (tabela e ingredientes) rolam automaticamente até o campo
