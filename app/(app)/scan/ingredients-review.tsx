@@ -17,7 +17,7 @@ function buildProduct(flow: ScanFlowData, analysis: IngredientAnalysis | null): 
   return {
     barcode: flow.barcode,
     name: flow.productName,
-    brand: null,
+    brand: flow.brand,
     nutritional_table: flow.nutritionalTable,
     ingredients: flow.ingredients,
     analysis,
@@ -59,6 +59,7 @@ export default function IngredientsReviewScreen() {
         mode: flow.mode,
         data: {
           name: flow.productName,
+          brand: flow.brand,
           nutritional_table: flow.nutritionalTable,
           ingredients: flow.ingredients,
         },
