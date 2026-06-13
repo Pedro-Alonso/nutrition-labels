@@ -44,6 +44,8 @@ export default function HistoryDetailScreen() {
     const analysis = result?.ingredient_analysis ?? null;
 
     return {
+      productName: result?.name ?? null,
+      brand: result?.brand ?? null,
       riskLevel: ((scan?.risco_global ?? analysis?.risco_global) as RiskLevel) ?? 'NENHUM',
       passed: scan?.passed ?? null,
       llmSummary: result?.llm_summary ?? analysis?.natural_language_summary ?? null,
@@ -120,7 +122,8 @@ export default function HistoryDetailScreen() {
         <>
           <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
             <RiskSummary
-              productName={null}
+              productName={data.productName}
+              brand={data.brand}
               barcode={null}
               riskLevel={data.riskLevel}
               passed={data.passed}

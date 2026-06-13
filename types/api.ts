@@ -65,6 +65,8 @@ export interface ScanSummary {
   passed: boolean;
   winning_preset: string | null;
   risco_global: string | null;
+  name?: string | null;
+  brand?: string | null;
 }
 
 export interface ScansResponse {
@@ -138,6 +140,8 @@ export interface AnalyzeResponse {
   ingredient_analysis: IngredientAnalysis | null;
   llm_summary?: string | null;
   image_hash: string;
+  name?: string | null;
+  brand?: string | null;
 }
 
 // ─── Products ────────────────────────────────────────────────────────────────

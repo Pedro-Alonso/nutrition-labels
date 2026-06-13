@@ -19,12 +19,13 @@ export function ScanHistoryCard({ scan }: ScanHistoryCardProps) {
   const risk = (scan.risco_global ?? 'NENHUM') as RiskLevel;
   const date = formatDate(scan.created_at);
   const formatLabel = getFormatLabel(scan.detected_format);
+  const name = scan.name ?? 'Produto desconhecido';
 
   return (
     <Pressable
       onPress={() => router.push(ROUTES.HISTORY_DETAIL(scan.id))}
       accessibilityRole="button"
-      accessibilityLabel={`Produto desconhecido, risco ${RISK_LABELS[risk]}, ${formatLabel}, ${date}`}
+      accessibilityLabel={`${name}, risco ${RISK_LABELS[risk]}, ${formatLabel}, ${date}`}
       accessibilityHint="Abre os detalhes desta análise"
       className="flex-row bg-white dark:bg-dark-card rounded-lg shadow-sm mb-2 overflow-hidden min-h-[44px]"
     >
@@ -37,7 +38,7 @@ export function ScanHistoryCard({ scan }: ScanHistoryCardProps) {
               allowFontScaling
               numberOfLines={1}
             >
-              Produto desconhecido
+              {name}
             </Text>
             <RiskBadge level={risk} size="sm" />
           </View>

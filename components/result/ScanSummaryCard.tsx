@@ -17,17 +17,18 @@ interface ScanSummaryCardProps {
 export function ScanSummaryCard({ scan }: ScanSummaryCardProps) {
   const risk = (scan.risco_global ?? 'NENHUM') as RiskLevel;
   const date = formatDate(scan.created_at);
+  const name = scan.name ?? 'Produto desconhecido';
 
   return (
     <Card
       onPress={() => router.push(ROUTES.HISTORY_DETAIL(scan.id))}
-      accessibilityLabel={`Produto desconhecido, risco ${RISK_LABELS[risk]}, ${date}`}
+      accessibilityLabel={`${name}, risco ${RISK_LABELS[risk]}, ${date}`}
       className="mb-0 flex-row items-center gap-3"
     >
       <RiskBadge level={risk} size="sm" />
       <View className="flex-1">
         <Text className="text-base font-semibold text-neutral-900 dark:text-dark-text" allowFontScaling numberOfLines={1}>
-          Produto desconhecido
+          {name}
         </Text>
         <Text className="text-xs text-neutral-400 mt-0.5" allowFontScaling>
           {date}
