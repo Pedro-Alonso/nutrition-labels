@@ -18,8 +18,12 @@ export function useUpsertProduct() {
       mode === 'create'
         ? productsService.createProduct(barcode, data)
         : productsService.updateProduct(barcode, data),
-    onSuccess: (_product, { barcode }) => {
+    onSuccess: (_product, { barcode, mode }) => {
       queryClient.invalidateQueries({ queryKey: PRODUCT_QUERY_KEY(barcode) });
+      // create persiste um Scan no servidor (registra histórico).
+      if (mode === 'create') {
+        queryClient.invalidateQueries({ queryKey: ['scans'] });
+      }
     },
   });
 }

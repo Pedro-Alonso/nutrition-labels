@@ -23,6 +23,9 @@ export function useUpdateProfile() {
     mutationFn: (data: UpdateProfileRequest) => usersService.updateMe(data),
     onSuccess: (data) => {
       queryClient.setQueryData(ME_QUERY_KEY, data);
+      // diabetes_type/language_level mudaram → próximo read regenera o resumo
+      // e o histórico (risco_global/resumo) deve refletir a personalização atual.
+      queryClient.invalidateQueries({ queryKey: ['scans'] });
     },
   });
 }
