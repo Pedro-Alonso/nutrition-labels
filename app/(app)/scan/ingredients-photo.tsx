@@ -4,7 +4,8 @@ import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import { Redirect, router } from 'expo-router';
 import { useRef, useState } from 'react';
-import { Linking, Text, useWindowDimensions, View } from 'react-native';
+import { Image, Linking, Text, useWindowDimensions, View } from 'react-native';
+import { CropOverlay } from '@/components/scan/CropOverlay';
 import { OcrOverlay } from '@/components/scan/OcrOverlay';
 import { Button } from '@/components/ui/Button';
 import { LoadingOverlay } from '@/components/ui/LoadingOverlay';
@@ -12,10 +13,10 @@ import { Toast } from '@/components/ui/Toast';
 import { ROUTES } from '@/constants/routes';
 import { useOcrPreview } from '@/hooks/useOcrPreview';
 import { useScanFlow } from '@/stores/scanFlowStore';
-import { cropToPreviewAspect } from '@/utils/cropPhoto';
+import { cropToPreviewAspect, cropToRect } from '@/utils/cropPhoto';
 import type { ImageUpload, IngredientsData, NutritionalTableData } from '@/types/api';
 
-type Phase = 'camera' | 'capturing' | 'preview' | 'processing';
+type Phase = 'camera' | 'capturing' | 'preview' | 'crop' | 'processing';
 
 const EMPTY_TABLE: NutritionalTableData = { portion_description: null, columns: [], rows: [] };
 const EMPTY_INGREDIENTS: IngredientsData = { items: [] };
@@ -35,6 +36,7 @@ export default function IngredientsPhotoScreen() {
   const cameraRef = useRef<CameraView>(null);
   const [phase, setPhase] = useState<Phase>('camera');
   const [photoUri, setPhotoUri] = useState<string | null>(null);
+  const [photoDimensions, setPhotoDimensions] = useState<{ width: number; height: number } | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const ocr = useOcrPreview();
 
@@ -113,6 +115,11 @@ export default function IngredientsPhotoScreen() {
       const uri = await cropToPreviewAspect(photo.uri, photo.width, photo.height, screenWidth, screenHeight);
       setPhotoUri(uri);
       setPhase('preview');
+      Image.getSize(
+        uri,
+        (width, height) => setPhotoDimensions({ width, height }),
+        () => setPhotoDimensions(null),
+      );
     } catch {
       setErrorMessage('Não foi possível capturar a foto. Tente novamente.');
       setPhase('camera');
@@ -128,7 +135,9 @@ export default function IngredientsPhotoScreen() {
     }
     const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.8 });
     if (result.canceled || !result.assets?.[0]?.uri) return;
-    setPhotoUri(result.assets[0].uri);
+    const asset = result.assets[0];
+    setPhotoUri(asset.uri);
+    setPhotoDimensions(asset.width && asset.height ? { width: asset.width, height: asset.height } : null);
     setPhase('preview');
   };
 
@@ -160,22 +169,35 @@ export default function IngredientsPhotoScreen() {
     <View className="flex-1 bg-black">
       <CameraView ref={cameraRef} style={{ flex: 1 }} facing="back" />
 
-      <OcrOverlay
-        phase={phase === 'preview' ? 'preview' : 'camera'}
-        capturing={phase === 'capturing'}
-        disabled={phase === 'processing'}
-        title="Fotografe a lista de ingredientes"
-        subtitle="Certifique-se de que todo o texto esteja visível"
-        guideLabel="LISTA DE INGREDIENTES"
-        previewUri={photoUri}
-        previewLabel="Lista de ingredientes capturada"
-        previewQuestion="O texto está legível e completo?"
-        onCapture={handleCapture}
-        onGalleryPress={handleGallery}
-        onManualPress={() => finalize(null)}
-        onRetake={() => setPhase('camera')}
-        onConfirm={() => finalize(photoUri)}
-      />
+      {phase === 'crop' && photoUri && photoDimensions ? (
+        <CropOverlay
+          uri={photoUri}
+          imageWidth={photoDimensions.width}
+          imageHeight={photoDimensions.height}
+          onCrop={async (rect) => {
+            const croppedUri = await cropToRect(photoUri, rect);
+            finalize(croppedUri);
+          }}
+          onSkip={() => finalize(photoUri)}
+        />
+      ) : (
+        <OcrOverlay
+          phase={phase === 'preview' ? 'preview' : 'camera'}
+          capturing={phase === 'capturing'}
+          disabled={phase === 'processing'}
+          title="Fotografe a lista de ingredientes"
+          subtitle="Certifique-se de que todo o texto esteja visível"
+          guideLabel="LISTA DE INGREDIENTES"
+          previewUri={photoUri}
+          previewLabel="Lista de ingredientes capturada"
+          previewQuestion="O texto está legível e completo?"
+          onCapture={handleCapture}
+          onGalleryPress={handleGallery}
+          onManualPress={() => finalize(null)}
+          onRetake={() => setPhase('camera')}
+          onConfirm={() => (photoDimensions ? setPhase('crop') : finalize(photoUri))}
+        />
+      )}
 
       {phase === 'processing' && (
         <LoadingOverlay label={'Analisando rótulo…\nIsso pode levar alguns segundos'} />

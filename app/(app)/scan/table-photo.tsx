@@ -3,15 +3,16 @@ import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import { Redirect, router } from 'expo-router';
 import { useRef, useState } from 'react';
-import { Linking, Text, useWindowDimensions, View } from 'react-native';
+import { Image, Linking, Text, useWindowDimensions, View } from 'react-native';
+import { CropOverlay } from '@/components/scan/CropOverlay';
 import { OcrOverlay } from '@/components/scan/OcrOverlay';
 import { Button } from '@/components/ui/Button';
 import { Toast } from '@/components/ui/Toast';
 import { ROUTES } from '@/constants/routes';
 import { useScanFlow } from '@/stores/scanFlowStore';
-import { cropToPreviewAspect } from '@/utils/cropPhoto';
+import { cropToPreviewAspect, cropToRect } from '@/utils/cropPhoto';
 
-type Phase = 'camera' | 'capturing' | 'preview';
+type Phase = 'camera' | 'capturing' | 'preview' | 'crop';
 
 export default function TablePhotoScreen() {
   const { capture, setCaptureTable } = useScanFlow();
@@ -20,6 +21,7 @@ export default function TablePhotoScreen() {
   const cameraRef = useRef<CameraView>(null);
   const [phase, setPhase] = useState<Phase>('camera');
   const [photoUri, setPhotoUri] = useState<string | null>(null);
+  const [photoDimensions, setPhotoDimensions] = useState<{ width: number; height: number } | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Acesso direto à rota sem captura ativa: volta ao início do scan.
@@ -39,6 +41,11 @@ export default function TablePhotoScreen() {
       const uri = await cropToPreviewAspect(photo.uri, photo.width, photo.height, screenWidth, screenHeight);
       setPhotoUri(uri);
       setPhase('preview');
+      Image.getSize(
+        uri,
+        (width, height) => setPhotoDimensions({ width, height }),
+        () => setPhotoDimensions(null),
+      );
     } catch {
       setErrorMessage('Não foi possível capturar a foto. Tente novamente.');
       setPhase('camera');
@@ -54,7 +61,9 @@ export default function TablePhotoScreen() {
     }
     const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.8 });
     if (result.canceled || !result.assets?.[0]?.uri) return;
-    setPhotoUri(result.assets[0].uri);
+    const asset = result.assets[0];
+    setPhotoUri(asset.uri);
+    setPhotoDimensions(asset.width && asset.height ? { width: asset.width, height: asset.height } : null);
     setPhase('preview');
   };
 
@@ -86,21 +95,34 @@ export default function TablePhotoScreen() {
     <View className="flex-1 bg-black">
       <CameraView ref={cameraRef} style={{ flex: 1 }} facing="back" />
 
-      <OcrOverlay
-        phase={phase === 'preview' ? 'preview' : 'camera'}
-        capturing={phase === 'capturing'}
-        title="Fotografe a tabela nutricional"
-        subtitle="Enquadre toda a tabela dentro do guia abaixo"
-        guideLabel="TABELA NUTRICIONAL"
-        previewUri={photoUri}
-        previewLabel="Tabela nutricional capturada"
-        previewQuestion="A tabela está legível e bem enquadrada?"
-        onCapture={handleCapture}
-        onGalleryPress={handleGallery}
-        onManualPress={() => goToIngredients(null)}
-        onRetake={() => setPhase('camera')}
-        onConfirm={() => goToIngredients(photoUri)}
-      />
+      {phase === 'crop' && photoUri && photoDimensions ? (
+        <CropOverlay
+          uri={photoUri}
+          imageWidth={photoDimensions.width}
+          imageHeight={photoDimensions.height}
+          onCrop={async (rect) => {
+            const croppedUri = await cropToRect(photoUri, rect);
+            goToIngredients(croppedUri);
+          }}
+          onSkip={() => goToIngredients(photoUri)}
+        />
+      ) : (
+        <OcrOverlay
+          phase={phase === 'preview' ? 'preview' : 'camera'}
+          capturing={phase === 'capturing'}
+          title="Fotografe a tabela nutricional"
+          subtitle="Enquadre toda a tabela dentro do guia abaixo"
+          guideLabel="TABELA NUTRICIONAL"
+          previewUri={photoUri}
+          previewLabel="Tabela nutricional capturada"
+          previewQuestion="A tabela está legível e bem enquadrada?"
+          onCapture={handleCapture}
+          onGalleryPress={handleGallery}
+          onManualPress={() => goToIngredients(null)}
+          onRetake={() => setPhase('camera')}
+          onConfirm={() => (photoDimensions ? setPhase('crop') : goToIngredients(photoUri))}
+        />
+      )}
 
       {errorMessage && (
         <Toast
