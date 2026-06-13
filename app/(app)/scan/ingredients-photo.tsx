@@ -14,20 +14,13 @@ import { ROUTES } from '@/constants/routes';
 import { useOcrPreview } from '@/hooks/useOcrPreview';
 import { useScanFlow } from '@/stores/scanFlowStore';
 import { cropToPreviewAspect, cropToRect } from '@/utils/cropPhoto';
-import type { ImageUpload, IngredientsData, NutritionalTableData } from '@/types/api';
+import { toUpload } from '@/utils/upload';
+import type { IngredientsData, NutritionalTableData } from '@/types/api';
 
 type Phase = 'camera' | 'capturing' | 'preview' | 'crop' | 'processing';
 
 const EMPTY_TABLE: NutritionalTableData = { portion_description: null, columns: [], rows: [] };
 const EMPTY_INGREDIENTS: IngredientsData = { items: [] };
-
-// Monta o objeto de upload (multipart) a partir da URI local da foto.
-function toUpload(uri: string): ImageUpload {
-  const name = uri.split('/').pop() ?? 'rotulo.jpg';
-  const extension = name.split('.').pop()?.toLowerCase();
-  const type = extension === 'png' ? 'image/png' : 'image/jpeg';
-  return { uri, name, type };
-}
 
 export default function IngredientsPhotoScreen() {
   const { capture, setCaptureIngredients, startFlow } = useScanFlow();
