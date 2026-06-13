@@ -25,9 +25,6 @@ export default function MetadataScreen() {
   const upsertProduct = useUpsertProduct();
   const [errorToast, setErrorToast] = useState('');
 
-  // Acesso direto à rota sem fluxo/captura ativos: volta ao início do scan.
-  if (!flow && !capture) return <Redirect href={ROUTES.SCAN_BARCODE} />;
-
   const {
     control,
     handleSubmit,
@@ -39,6 +36,10 @@ export default function MetadataScreen() {
       brand: flow?.brand ?? capture?.brand ?? '',
     },
   });
+
+  // Acesso direto à rota sem fluxo/captura ativos (ou reset após confirmar):
+  // volta ao início do scan. Após todos os hooks, para não pular `useForm`.
+  if (!flow && !capture) return <Redirect href={ROUTES.SCAN_BARCODE} />;
 
   const onSubmit = async (data: MetadataFormData) => {
     const name = data.name.trim();
