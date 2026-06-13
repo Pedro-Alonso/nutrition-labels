@@ -42,6 +42,7 @@ export default function ResultScreen() {
 
     return {
       productName: product?.name ?? null,
+      brand: product?.brand ?? null,
       barcode: params.barcode || product?.barcode || null,
       riskLevel: (analysis?.risco_global as RiskLevel) ?? 'NENHUM',
       passed: analyzeResponse?.passed ?? null,
@@ -86,6 +87,7 @@ export default function ResultScreen() {
       <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
         <RiskSummary
           productName={data.productName}
+          brand={data.brand}
           barcode={data.barcode}
           riskLevel={data.riskLevel}
           passed={data.passed}
