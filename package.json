@@ -48,6 +48,7 @@
     "start": "expo start",
     "start:debug": "node scripts/with-debug-logs.js",
     "android": "expo run:android",
+    "android:debug": "node scripts/run-android-with-debug-logs.js",
     "android:device": "expo run:android --device",
     "ios": "expo run:ios",
     "web": "expo start --web",
