@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Add/remove columns in the editable nutrition table (`EditableNutritionTable`).
+  Users can now grow or shrink the number of value columns; at least one column
+  is always kept.
+- Single-column fallback: when the table arrives empty (OCR failure or manual
+  mode), the editor starts with one column ("Quantidade por porção") and one
+  blank row instead of rendering nothing.
+
 ### Changed
 
 ### Fixed
