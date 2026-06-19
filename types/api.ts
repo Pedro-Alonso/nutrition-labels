@@ -142,6 +142,16 @@ export interface AnalyzeResponse {
   image_hash: string;
   name?: string | null;
   brand?: string | null;
+  barcode?: string | null;
+}
+
+// ─── Summary ────────────────────────────────────────────────────────────────
+
+export interface ProductSummaryResponse {
+  summary: string | null;
+  diabetes_type: string | null;
+  language_level: string | null;
+  risco_global: string | null;
 }
 
 // ─── Products ────────────────────────────────────────────────────────────────

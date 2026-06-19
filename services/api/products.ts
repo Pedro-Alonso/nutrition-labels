@@ -4,6 +4,7 @@ import type {
   OcrPreviewResponse,
   Product,
   ProductCreateRequest,
+  ProductSummaryResponse,
 } from '@/types/api';
 import { apiClient } from './client';
 
@@ -93,6 +94,17 @@ export const productsService = {
    */
   scanProduct: (barcode: string) =>
     apiClient.post<Product>(`/products/${barcode}/scan`).then((r) => r.data),
+
+  /**
+   * `GET /products/{barcode}/summary` — público (sem token, mas personaliza se autenticado).
+   * Retorna `ProductSummaryResponse` com resumo em linguagem natural personalizado
+   * pelo perfil do usuário autenticado (diabetes_type + language_level).
+   * Status: 200 ok · 404 produto não encontrado.
+   */
+  getProductSummary: (barcode: string) =>
+    apiClient
+      .get<ProductSummaryResponse>(`/products/${barcode}/summary`)
+      .then((r) => r.data),
 
   /**
    * `GET /products/{barcode}/analysis` — público (sem token).
