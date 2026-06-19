@@ -13,6 +13,7 @@ import { ErrorMessage } from '@/components/ui/ErrorMessage';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { RISK_ORDER } from '@/constants/risk';
 import { ROUTES } from '@/constants/routes';
+import { usePersonalizedSummary } from '@/hooks/useProduct';
 import { useScanDetail } from '@/hooks/useScans';
 import type { IngredienteIdentificado } from '@/types/api';
 import type { RiskLevel } from '@/types/domain';
@@ -39,23 +40,30 @@ export default function HistoryDetailScreen() {
   const [sheetIngredient, setSheetIngredient] = useState<IngredienteIdentificado | null>(null);
   const [showUnidentified, setShowUnidentified] = useState(false);
 
+  const barcode = scan?.result_json?.barcode ?? null;
+  const {
+    data: liveSummary,
+    isLoading: isSummaryLoading,
+  } = usePersonalizedSummary(barcode);
+
   const data = useMemo(() => {
     const result = scan?.result_json ?? null;
     const analysis = result?.ingredient_analysis ?? null;
+    const frozenSummary = result?.llm_summary ?? analysis?.natural_language_summary ?? null;
 
     return {
       productName: result?.name ?? null,
       brand: result?.brand ?? null,
       riskLevel: ((scan?.risco_global ?? analysis?.risco_global) as RiskLevel) ?? 'NENHUM',
       passed: scan?.passed ?? null,
-      llmSummary: result?.llm_summary ?? analysis?.natural_language_summary ?? null,
+      llmSummary: liveSummary?.summary ?? frozenSummary,
       ingredients: analysis?.ingredientes_identificados ?? [],
       highRiskIngredients: analysis?.high_risk_ingredients ?? [],
       safeSweeteners: analysis?.safe_sweeteners ?? [],
       unidentified: analysis?.nao_identificados ?? [],
       finalText: result?.final_postprocessed_text || null,
     };
-  }, [scan]);
+  }, [scan, liveSummary]);
 
   const sortedIngredients = useMemo(
     () =>
@@ -129,7 +137,16 @@ export default function HistoryDetailScreen() {
               passed={data.passed}
             />
 
-            {data.llmSummary && <LlmSummary summary={data.llmSummary} />}
+            {data.llmSummary ? (
+              <LlmSummary summary={data.llmSummary} />
+            ) : isSummaryLoading && barcode ? (
+              <View className="mx-4 mt-4 items-center py-4" accessibilityLiveRegion="polite">
+                <ActivityIndicator size="small" color="#10B981" />
+                <Text className="text-sm text-neutral-500 mt-2" allowFontScaling>
+                  Gerando resumo personalizado…
+                </Text>
+              </View>
+            ) : null}
 
             {data.highRiskIngredients.length > 0 && (
               <View>
