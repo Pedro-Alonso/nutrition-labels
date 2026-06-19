@@ -49,21 +49,18 @@ export function EditableNutritionTable({
   onChange,
   onDirtyChange,
 }: EditableNutritionTableProps) {
-  const colCount = value.columns.length;
+  const initCols = value.columns.length > 0 ? value.columns : ['Quantidade por porção'];
+  const initRows =
+    value.rows.length > 0
+      ? value.rows.map((r, i) => ({ id: i, nutrient: r.nutrient, values: fitValues(r.values, initCols.length) }))
+      : [{ id: 0, nutrient: '', values: Array(initCols.length).fill('') as string[] }];
+
   const [portion, setPortion] = useState(value.portion_description ?? '');
-  const [columns, setColumns] = useState<string[]>(value.columns);
-  const [rows, setRows] = useState<Row[]>(() =>
-    value.rows.map((r, i) => ({ id: i, nutrient: r.nutrient, values: fitValues(r.values, colCount) })),
-  );
+  const [columns, setColumns] = useState<string[]>(initCols);
+  const [rows, setRows] = useState<Row[]>(() => initRows);
   const [editingKey, setEditingKey] = useState<string | null>(null);
-  const nextId = useRef(value.rows.length);
-  const initial = useRef(
-    serialize(
-      value.portion_description ?? '',
-      value.columns,
-      value.rows.map((r, i) => ({ id: i, nutrient: r.nutrient, values: fitValues(r.values, colCount) })),
-    ),
-  );
+  const nextId = useRef(initRows.length);
+  const initial = useRef(serialize(value.portion_description ?? '', initCols, initRows));
 
   const { title, subtitle } = HEADERS[source];
 
@@ -115,6 +112,23 @@ export function EditableNutritionTable({
     emit(portion, columns, next);
   };
 
+  const addColumn = () => {
+    const nextCols = [...columns, ''];
+    const nextRows = rows.map((r) => ({ ...r, values: fitValues(r.values, nextCols.length) }));
+    setColumns(nextCols);
+    setRows(nextRows);
+    emit(portion, nextCols, nextRows);
+  };
+
+  const removeColumn = (index: number) => {
+    if (columns.length <= 1) return;
+    const nextCols = columns.filter((_, i) => i !== index);
+    const nextRows = rows.map((r) => ({ ...r, values: r.values.filter((_, i) => i !== index) }));
+    setColumns(nextCols);
+    setRows(nextRows);
+    emit(portion, nextCols, nextRows);
+  };
+
   return (
     <View>
       {/* Cabeçalho por origem */}
@@ -157,19 +171,43 @@ export function EditableNutritionTable({
           </View>
           {columns.map((col, i) => (
             <View key={`col-${i}`} className="flex-1 px-2">
-              <InlineEditText
-                value={col}
-                onChangeText={(t) => changeColumn(i, t)}
-                editing={editingKey === `header:${i}`}
-                onRequestEdit={() => setEditingKey(`header:${i}`)}
-                onEndEdit={() => setEditingKey(null)}
-                accessibilityLabel={`Cabeçalho da coluna ${i + 1}`}
-                placeholder="Coluna"
-                textClassName="text-xs font-bold uppercase text-neutral-600 dark:text-dark-text-secondary"
-              />
+              <View className="flex-row items-center">
+                <View className="flex-1">
+                  <InlineEditText
+                    value={col}
+                    onChangeText={(t) => changeColumn(i, t)}
+                    editing={editingKey === `header:${i}`}
+                    onRequestEdit={() => setEditingKey(`header:${i}`)}
+                    onEndEdit={() => setEditingKey(null)}
+                    accessibilityLabel={`Cabeçalho da coluna ${i + 1}`}
+                    placeholder="Coluna"
+                    textClassName="text-xs font-bold uppercase text-neutral-600 dark:text-dark-text-secondary"
+                  />
+                </View>
+                {columns.length > 1 && (
+                  <Pressable
+                    onPress={() => removeColumn(i)}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Remover coluna ${i + 1}`}
+                    hitSlop={4}
+                    className="ml-1 items-center justify-center"
+                    style={{ minHeight: 44, minWidth: 28 }}
+                  >
+                    <Ionicons name="close-circle-outline" size={16} color="#9CA3AF" />
+                  </Pressable>
+                )}
+              </View>
             </View>
           ))}
-          <View className="w-11" />
+          <Pressable
+            onPress={addColumn}
+            accessibilityRole="button"
+            accessibilityLabel="Adicionar coluna à tabela"
+            className="w-11 items-center justify-center"
+            style={{ minHeight: 44 }}
+          >
+            <Ionicons name="add-circle-outline" size={20} color="#059669" />
+          </Pressable>
         </View>
 
         {/* Linhas */}
