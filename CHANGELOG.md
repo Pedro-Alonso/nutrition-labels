@@ -15,6 +15,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Single-column fallback: when the table arrives empty (OCR failure or manual
   mode), the editor starts with one column ("Quantidade por porção") and one
   blank row instead of rendering nothing.
+- Optional nutritional table: prominent "Pular tabela" button on the table photo
+  screen clearly labels the step as optional. On the table review screen, a
+  "Limpar tabela" header action resets the table to empty, and confirming with an
+  empty table shows a disclaimer (ingredients are the main input for analysis).
+  `normalizeProductPayload` now sends `nutritional_table: null` when all rows and
+  columns are empty.
 
 ### Changed
 
