@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Live personalized summary in scan history detail: fetches the summary from
+  `GET /products/{barcode}/summary` keyed by the user's diabetes type and
+  language level, falling back to the frozen scan text while loading or on error.
+  Changing profile preferences automatically invalidates and refetches the summary.
 - Add/remove columns in the editable nutrition table (`EditableNutritionTable`).
   Users can now grow or shrink the number of value columns; at least one column
   is always kept.
