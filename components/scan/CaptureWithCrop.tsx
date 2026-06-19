@@ -2,12 +2,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import { useRef, useState } from 'react';
-import { Image, Linking, Text, useWindowDimensions, View } from 'react-native';
+import { Linking, Text, View } from 'react-native';
 import { CropOverlay } from '@/components/scan/CropOverlay';
 import { OcrOverlay } from '@/components/scan/OcrOverlay';
 import { Button } from '@/components/ui/Button';
 import { Toast } from '@/components/ui/Toast';
-import { cropToPreviewAspect, cropToRect } from '@/utils/cropPhoto';
+import { cropToRect } from '@/utils/cropPhoto';
 
 type Phase = 'camera' | 'capturing' | 'preview' | 'crop';
 
@@ -30,7 +30,6 @@ export function CaptureWithCrop({
   onComplete,
   onCancel,
 }: CaptureWithCropProps) {
-  const { width: screenWidth, height: screenHeight } = useWindowDimensions();
   const [permission, requestPermission] = useCameraPermissions();
   const cameraRef = useRef<CameraView>(null);
   const [phase, setPhase] = useState<Phase>('camera');
@@ -44,14 +43,9 @@ export function CaptureWithCrop({
     try {
       const photo = await cameraRef.current.takePictureAsync({ quality: 0.8 });
       if (!photo?.uri) throw new Error('Falha ao capturar foto');
-      const uri = await cropToPreviewAspect(photo.uri, photo.width, photo.height, screenWidth, screenHeight);
-      setPhotoUri(uri);
+      setPhotoUri(photo.uri);
+      setPhotoDimensions(photo.width && photo.height ? { width: photo.width, height: photo.height } : null);
       setPhase('preview');
-      Image.getSize(
-        uri,
-        (width, height) => setPhotoDimensions({ width, height }),
-        () => setPhotoDimensions(null),
-      );
     } catch {
       setErrorMessage('Não foi possível capturar a foto. Tente novamente.');
       setPhase('camera');

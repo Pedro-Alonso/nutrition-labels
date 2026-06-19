@@ -13,6 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Auto-crop (`cropToPreviewAspect`) cortava as colunas laterais da foto do
+  sensor (~39% da largura), degradando o OCR de tabelas nutricionais. Removido
+  o auto-crop; o frame completo do sensor agora é enviado ao OCR, mantendo o
+  recorte manual (CropOverlay) como opção.
+
 ### Removed
 
 ## [1.2.0] - 2026-06-13

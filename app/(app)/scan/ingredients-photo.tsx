@@ -4,7 +4,7 @@ import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import { Redirect, router } from 'expo-router';
 import { useRef, useState } from 'react';
-import { Image, Linking, Text, useWindowDimensions, View } from 'react-native';
+import { Linking, Text, View } from 'react-native';
 import { CropOverlay } from '@/components/scan/CropOverlay';
 import { OcrOverlay } from '@/components/scan/OcrOverlay';
 import { Button } from '@/components/ui/Button';
@@ -13,7 +13,7 @@ import { Toast } from '@/components/ui/Toast';
 import { ROUTES } from '@/constants/routes';
 import { useOcrPreview } from '@/hooks/useOcrPreview';
 import { useScanFlow } from '@/stores/scanFlowStore';
-import { cropToPreviewAspect, cropToRect } from '@/utils/cropPhoto';
+import { cropToRect } from '@/utils/cropPhoto';
 import { toUpload } from '@/utils/upload';
 import type { IngredientsData, NutritionalTableData } from '@/types/api';
 
@@ -24,7 +24,6 @@ const EMPTY_INGREDIENTS: IngredientsData = { items: [] };
 
 export default function IngredientsPhotoScreen() {
   const { capture, setCaptureIngredients, startFlow } = useScanFlow();
-  const { width: screenWidth, height: screenHeight } = useWindowDimensions();
   const [permission, requestPermission] = useCameraPermissions();
   const cameraRef = useRef<CameraView>(null);
   const [phase, setPhase] = useState<Phase>('camera');
@@ -105,14 +104,9 @@ export default function IngredientsPhotoScreen() {
     try {
       const photo = await cameraRef.current.takePictureAsync({ quality: 0.8 });
       if (!photo?.uri) throw new Error('Falha ao capturar foto');
-      const uri = await cropToPreviewAspect(photo.uri, photo.width, photo.height, screenWidth, screenHeight);
-      setPhotoUri(uri);
+      setPhotoUri(photo.uri);
+      setPhotoDimensions(photo.width && photo.height ? { width: photo.width, height: photo.height } : null);
       setPhase('preview');
-      Image.getSize(
-        uri,
-        (width, height) => setPhotoDimensions({ width, height }),
-        () => setPhotoDimensions(null),
-      );
     } catch {
       setErrorMessage('Não foi possível capturar a foto. Tente novamente.');
       setPhase('camera');
