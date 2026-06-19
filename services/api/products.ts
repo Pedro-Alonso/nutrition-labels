@@ -34,13 +34,18 @@ function normalizeProductPayload(data: ProductCreateRequest): ProductCreateReque
         values: row.values.map((v) => v.trim()),
       }))
       .filter((row) => row.nutrient !== '' || row.values.some((v) => v !== ''));
+    const columns = table.columns.map((c) => c.trim());
 
-    normalized.nutritional_table = {
-      ...table,
-      portion_description: portion === '' ? null : portion,
-      columns: table.columns.map((c) => c.trim()),
-      rows,
-    };
+    if (rows.length === 0 && columns.every((c) => c === '')) {
+      normalized.nutritional_table = null;
+    } else {
+      normalized.nutritional_table = {
+        ...table,
+        portion_description: portion === '' ? null : portion,
+        columns,
+        rows,
+      };
+    }
   }
 
   if (normalized.ingredients) {
