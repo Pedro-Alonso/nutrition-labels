@@ -3,7 +3,8 @@ import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import { Redirect, router } from 'expo-router';
 import { useRef, useState } from 'react';
-import { Linking, Text, View } from 'react-native';
+import { Linking, Pressable, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CropOverlay } from '@/components/scan/CropOverlay';
 import { OcrOverlay } from '@/components/scan/OcrOverlay';
 import { Button } from '@/components/ui/Button';
@@ -16,6 +17,7 @@ type Phase = 'camera' | 'capturing' | 'preview' | 'crop';
 
 export default function TablePhotoScreen() {
   const { capture, setCaptureTable } = useScanFlow();
+  const insets = useSafeAreaInsets();
   const [permission, requestPermission] = useCameraPermissions();
   const cameraRef = useRef<CameraView>(null);
   const [phase, setPhase] = useState<Phase>('camera');
@@ -101,21 +103,40 @@ export default function TablePhotoScreen() {
           onSkip={() => goToIngredients(photoUri)}
         />
       ) : (
-        <OcrOverlay
-          phase={phase === 'preview' ? 'preview' : 'camera'}
-          capturing={phase === 'capturing'}
-          title="Fotografe a tabela nutricional"
-          subtitle="Enquadre toda a tabela dentro do guia abaixo"
-          guideLabel="TABELA NUTRICIONAL"
-          previewUri={photoUri}
-          previewLabel="Tabela nutricional capturada"
-          previewQuestion="A tabela está legível e bem enquadrada?"
-          onCapture={handleCapture}
-          onGalleryPress={handleGallery}
-          onManualPress={() => goToIngredients(null)}
-          onRetake={() => setPhase('camera')}
-          onConfirm={() => (photoDimensions ? setPhase('crop') : goToIngredients(photoUri))}
-        />
+        <>
+          <OcrOverlay
+            phase={phase === 'preview' ? 'preview' : 'camera'}
+            capturing={phase === 'capturing'}
+            title="Fotografe a tabela nutricional"
+            subtitle="Enquadre toda a tabela dentro do guia abaixo"
+            guideLabel="TABELA NUTRICIONAL"
+            previewUri={photoUri}
+            previewLabel="Tabela nutricional capturada"
+            previewQuestion="A tabela está legível e bem enquadrada?"
+            onCapture={handleCapture}
+            onGalleryPress={handleGallery}
+            onManualPress={() => goToIngredients(null)}
+            onRetake={() => setPhase('camera')}
+            onConfirm={() => (photoDimensions ? setPhase('crop') : goToIngredients(photoUri))}
+          />
+          {phase === 'camera' && (
+            <Pressable
+              onPress={() => goToIngredients(null)}
+              accessibilityRole="button"
+              accessibilityLabel="Pular tabela nutricional"
+              accessibilityHint="A tabela é opcional. A análise usará apenas os ingredientes."
+              className="absolute self-center bg-black/60 rounded-xl px-5 items-center justify-center"
+              style={{ bottom: insets.bottom + 100, minHeight: 56 }}
+            >
+              <Text className="text-base text-white font-semibold" allowFontScaling>
+                Pular tabela
+              </Text>
+              <Text className="text-sm text-white/60" allowFontScaling>
+                A tabela é opcional
+              </Text>
+            </Pressable>
+          )}
+        </>
       )}
 
       {errorMessage && (
