@@ -20,12 +20,17 @@ export function ScanHistoryCard({ scan }: ScanHistoryCardProps) {
   const date = formatDate(scan.created_at);
   const formatLabel = getFormatLabel(scan.detected_format);
   const name = scan.name ?? 'Produto desconhecido';
+  const brand = scan.brand ?? null;
+
+  const a11yLabel = brand
+    ? `${name}, marca ${brand}, risco ${RISK_LABELS[risk]}, ${date}`
+    : `${name}, risco ${RISK_LABELS[risk]}, ${date}`;
 
   return (
     <Pressable
       onPress={() => router.push(ROUTES.HISTORY_DETAIL(scan.id))}
       accessibilityRole="button"
-      accessibilityLabel={`${name}, risco ${RISK_LABELS[risk]}, ${formatLabel}, ${date}`}
+      accessibilityLabel={a11yLabel}
       accessibilityHint="Abre os detalhes desta análise"
       className="flex-row bg-white dark:bg-dark-card rounded-lg shadow-sm mb-2 overflow-hidden min-h-[44px]"
     >
@@ -42,6 +47,15 @@ export function ScanHistoryCard({ scan }: ScanHistoryCardProps) {
             </Text>
             <RiskBadge level={risk} size="sm" />
           </View>
+          {brand && (
+            <Text
+              className="text-sm text-neutral-500 dark:text-dark-subtext mt-0.5"
+              allowFontScaling
+              numberOfLines={1}
+            >
+              {brand}
+            </Text>
+          )}
           <View className="flex-row items-center justify-between mt-1.5">
             <Text className="text-xs text-neutral-400" allowFontScaling>
               {formatLabel}
