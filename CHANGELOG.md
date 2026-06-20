@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-06-19
+
+### Added
+
+- Guest mode: users can now enter the app without creating an account by tapping
+  "Continuar como visitante" on the welcome screen. A temporary account is created
+  using a device-linked UUID.
+- Home header shows a "Fazer login" button for guest users.
+- Profile screen for guests shows account limitations info and CTAs to create a
+  real account or log in to an existing one.
+- Account upgrade screen: guests can convert to a regular account by providing an
+  email and password, preserving their scan history and preferences.
+- Login from guest: warns about data loss before logging into an existing account;
+  deletes the guest account and starts a fresh session.
+
 ## [1.3.0] - 2026-06-19
 
 ### Added
