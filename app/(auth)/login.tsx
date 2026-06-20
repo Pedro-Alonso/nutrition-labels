@@ -2,9 +2,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { isAxiosError } from 'axios';
 import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { z } from 'zod';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -20,7 +20,7 @@ const loginSchema = z.object({
 type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function LoginScreen() {
-  const { login } = useAuth();
+  const { login, loginFromGuest, isGuest } = useAuth();
   const [errorToast, setErrorToast] = useState('');
 
   const {
@@ -32,18 +32,40 @@ export default function LoginScreen() {
     defaultValues: { email: '', password: '' },
   });
 
+  const executeLogin = useCallback(
+    async (data: LoginFormData) => {
+      try {
+        if (isGuest) {
+          await loginFromGuest(data);
+        } else {
+          await login(data);
+        }
+        router.replace(ROUTES.HOME);
+      } catch (error) {
+        if (isAxiosError(error) && error.response?.status === 401) {
+          setErrorToast('E-mail ou senha inválidos.');
+        } else {
+          setErrorToast('Não foi possível entrar. Tente novamente.');
+        }
+      }
+    },
+    [isGuest, login, loginFromGuest],
+  );
+
   const onSubmit = async (data: LoginFormData) => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    try {
-      await login(data);
-      router.replace(ROUTES.HOME);
-    } catch (error) {
-      if (isAxiosError(error) && error.response?.status === 401) {
-        setErrorToast('E-mail ou senha inválidos.');
-      } else {
-        setErrorToast('Não foi possível entrar. Tente novamente.');
-      }
+    if (isGuest) {
+      Alert.alert(
+        'Atenção',
+        'Ao fazer login com outra conta, seus dados de visitante (histórico e preferências) serão perdidos. Deseja continuar?',
+        [
+          { text: 'Cancelar', style: 'cancel' },
+          { text: 'Continuar', style: 'destructive', onPress: () => executeLogin(data) },
+        ],
+      );
+      return;
     }
+    await executeLogin(data);
   };
 
   return (
