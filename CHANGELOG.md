@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.0] - 2026-06-20
+
+### Added
+
+- Search tab: new "Pesquisa" tab with fuzzy search by product name/brand and
+  automatic barcode detection. Debounced input (300ms) with smooth transitions
+  via `placeholderData: keepPreviousData`. Infinite scroll pagination on results.
+- Product search cards show product name (bold) and brand (subtitle).
+- Scan history cards now display brand as subtitle below the product name.
+- Swipe-to-delete on individual history items.
+- "Clear history" option in history screen header menu with confirmation dialog.
+- Tapping a search result registers the product in scan history and navigates
+  to the analysis result screen.
+
+### Changed
+
+- Tab bar order is now: Home, Search, Scan (center), History, Profile.
+- `ScanHistoryCard` redesigned with brand subtitle and adjusted layout.
+
 ## [1.4.0] - 2026-06-19
 
 ### Added
