@@ -214,6 +214,28 @@ export interface ProductCreateRequest {
   ingredients?: IngredientsData | null;
 }
 
+// ─── Product Search ─────────────────────────────────────────────────────────
+
+export interface ProductSearchItem {
+  barcode: string;
+  name: string | null;
+  brand: string | null;
+  created_at: string;
+}
+
+export interface ProductSearchResponse {
+  items: ProductSearchItem[];
+  total: number;
+  page: number;
+  per_page: number;
+}
+
+export interface ProductSearchParams {
+  q: string;
+  page?: number;
+  per_page?: number;
+}
+
 // ─── Presets ─────────────────────────────────────────────────────────────────
 
 export interface Preset {

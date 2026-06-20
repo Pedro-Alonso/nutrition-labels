@@ -4,6 +4,8 @@ import type {
   OcrPreviewResponse,
   Product,
   ProductCreateRequest,
+  ProductSearchParams,
+  ProductSearchResponse,
   ProductSummaryResponse,
 } from '@/types/api';
 import { apiClient } from './client';
@@ -115,6 +117,17 @@ export const productsService = {
   getProductAnalysis: (barcode: string) =>
     apiClient
       .get<IngredientAnalysis>(`/products/${barcode}/analysis`)
+      .then((r) => r.data),
+
+  /**
+   * `GET /products/search?q&page&per_page` — requer Bearer.
+   * Busca fuzzy por nome/marca com detecção automática de barcode.
+   * Retorna `ProductSearchResponse`: items, total, page, per_page.
+   * Status: 200 ok · 401 token inválido.
+   */
+  searchProducts: (params: ProductSearchParams) =>
+    apiClient
+      .get<ProductSearchResponse>('/products/search', { params })
       .then((r) => r.data),
 
   /**

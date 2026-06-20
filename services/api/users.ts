@@ -45,5 +45,21 @@ export const usersService = {
   getScanDetail: (scanId: string) =>
     apiClient.get<ScanDetailResponse>(`/users/me/scans/${scanId}`).then((r) => r.data),
 
+  /**
+   * `DELETE /users/me/scans/{scanId}` — requer Bearer.
+   * Remove uma análise individual do histórico.
+   * Status: 204 ok · 401 token inválido · 404 scan não encontrado.
+   */
+  deleteScan: (scanId: string) =>
+    apiClient.delete(`/users/me/scans/${scanId}`),
+
+  /**
+   * `DELETE /users/me/scans` — requer Bearer.
+   * Remove todas as análises do histórico do usuário.
+   * Status: 204 ok · 401 token inválido.
+   */
+  deleteAllScans: () =>
+    apiClient.delete('/users/me/scans'),
+
   deleteMe: () => apiClient.delete('/users/me').then((r) => r.data),
 };
