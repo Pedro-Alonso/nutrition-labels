@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { Alert, ScrollView, Text, View } from 'react-native';
 import { Button } from '@/components/ui/Button';
@@ -13,7 +14,7 @@ import { formatMemberSince, getInitials } from '@/utils/formatters';
 
 export default function ProfileScreen() {
   const { data: user, isLoading, isError, refetch } = useMe();
-  const { logout } = useAuth();
+  const { logout, isGuest } = useAuth();
 
   const handleLogout = () => {
     Alert.alert('Sair da conta', 'Tem certeza que deseja sair?', [
@@ -36,6 +37,22 @@ export default function ProfileScreen() {
         ) : isError || !user ? (
           <View className="px-4 pt-4">
             <ErrorMessage message="Não foi possível carregar seu perfil." onRetry={refetch} />
+          </View>
+        ) : isGuest ? (
+          <View
+            className="bg-white items-center pt-8 pb-5 border-b border-neutral-100"
+            accessible
+            accessibilityLabel="Perfil de visitante"
+          >
+            <View className="w-20 h-20 rounded-full bg-neutral-100 items-center justify-center">
+              <Ionicons name="person-outline" size={36} color="#9CA3AF" />
+            </View>
+            <Text className="text-xl font-semibold text-neutral-900 mt-3" allowFontScaling>
+              {user.display_name || 'Visitante'}
+            </Text>
+            <Text className="text-sm text-neutral-500 mt-1" allowFontScaling>
+              Conta de visitante
+            </Text>
           </View>
         ) : (
           <View
@@ -86,7 +103,68 @@ export default function ProfileScreen() {
           </View>
         )}
 
-        {!isLoading && !isError && user && (
+        {!isLoading && !isError && user && isGuest && (
+          <>
+            <View className="px-4 mt-4">
+              <View
+                className="bg-blue-50 rounded-xl p-4 flex-row gap-3"
+                accessibilityLiveRegion="polite"
+              >
+                <Ionicons name="information-circle-outline" size={22} color="#1D4ED8" />
+                <Text className="text-sm text-blue-700 flex-1 leading-5" allowFontScaling>
+                  Seus dados ficam armazenados apenas neste dispositivo. Para acessar de
+                  outro dispositivo, crie uma conta.
+                </Text>
+              </View>
+            </View>
+
+            <View className="px-4 mt-4 gap-3">
+              <ProfileInfoCard
+                icon="medical-outline"
+                label="Tipo de diabetes"
+                value={getDiabetesTypeLabel(user.diabetes_type)}
+              />
+              <ProfileInfoCard
+                icon="chatbubble-ellipses-outline"
+                label="Nível de linguagem"
+                value={getLanguageLevelLabel(user.language_level)}
+              />
+              <ProfileInfoCard
+                icon="calendar-outline"
+                label="Membro desde"
+                value={formatMemberSince(user.created_at)}
+              />
+            </View>
+
+            <View className="px-4 mt-4 gap-3">
+              <Button
+                variant="secondary"
+                full
+                onPress={() => router.push(ROUTES.PROFILE_EDIT)}
+                accessibilityLabel="Configurar preferências"
+              >
+                Configurar preferências
+              </Button>
+              <Button
+                full
+                onPress={() => router.push('/(auth)/upgrade')}
+                accessibilityLabel="Criar conta"
+              >
+                Criar conta
+              </Button>
+              <Button
+                variant="ghost"
+                full
+                onPress={() => router.push('/(auth)/login')}
+                accessibilityLabel="Fazer login com conta existente"
+              >
+                Fazer login
+              </Button>
+            </View>
+          </>
+        )}
+
+        {!isLoading && !isError && user && !isGuest && (
           <>
             <View className="px-4 mt-4 gap-3">
               <ProfileInfoCard
@@ -133,7 +211,7 @@ export default function ProfileScreen() {
 
         <View className="items-center mt-8">
           <Text className="text-xs text-neutral-400" allowFontScaling>
-            nutrition-labels v1.0.0
+            nutrition-labels v1.4.0
           </Text>
         </View>
       </ScrollView>
