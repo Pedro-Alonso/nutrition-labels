@@ -44,4 +44,6 @@ export const usersService = {
    */
   getScanDetail: (scanId: string) =>
     apiClient.get<ScanDetailResponse>(`/users/me/scans/${scanId}`).then((r) => r.data),
+
+  deleteMe: () => apiClient.delete('/users/me').then((r) => r.data),
 };

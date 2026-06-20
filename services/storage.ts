@@ -2,6 +2,7 @@ import * as SecureStore from 'expo-secure-store';
 
 const ACCESS_TOKEN_KEY = 'access_token';
 const REFRESH_TOKEN_KEY = 'refresh_token';
+const GUEST_DEVICE_UUID_KEY = 'guest_device_uuid';
 
 export const storage = {
   getAccessToken: () => SecureStore.getItemAsync(ACCESS_TOKEN_KEY),
@@ -16,4 +17,8 @@ export const storage = {
     await SecureStore.deleteItemAsync(ACCESS_TOKEN_KEY);
     await SecureStore.deleteItemAsync(REFRESH_TOKEN_KEY);
   },
+
+  getDeviceUuid: () => SecureStore.getItemAsync(GUEST_DEVICE_UUID_KEY),
+  setDeviceUuid: (uuid: string) => SecureStore.setItemAsync(GUEST_DEVICE_UUID_KEY, uuid),
+  deleteDeviceUuid: () => SecureStore.deleteItemAsync(GUEST_DEVICE_UUID_KEY),
 };

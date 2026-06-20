@@ -1,7 +1,7 @@
 {
   "name": "nutrition-labels",
   "main": "expo-router/entry",
-  "version": "1.0.0",
+  "version": "1.4.0",
   "dependencies": {
     "@expo/vector-icons": "^15.1.1",
     "@gorhom/bottom-sheet": "^5.2.14",
@@ -11,6 +11,7 @@
     "expo": "~56.0.9",
     "expo-camera": "~56.0.7",
     "expo-constants": "~56.0.17",
+    "expo-crypto": "^56.0.4",
     "expo-font": "~56.0.5",
     "expo-haptics": "~56.0.3",
     "expo-image-manipulator": "~56.0.18",

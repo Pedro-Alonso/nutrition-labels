@@ -1,3 +1,4 @@
+import * as Crypto from 'expo-crypto';
 import type {
   LoginRequest,
   LoginResponse,
@@ -6,7 +7,10 @@ import type {
   RefreshResponse,
   RegisterRequest,
   RegisterResponse,
+  UpgradeRequest,
+  UserProfile,
 } from '@/types/api';
+import { storage } from '@/services/storage';
 import { apiClient } from './client';
 
 export const authService = {
@@ -46,4 +50,25 @@ export const authService = {
    */
   logout: () =>
     apiClient.post<LogoutResponse>('/auth/logout').then((r) => r.data),
+
+  guestRegister: async (): Promise<{ email: string; password: string }> => {
+    const uuid = Crypto.randomUUID();
+    const randomBytes = Crypto.getRandomValues(new Uint8Array(24));
+    const password = Array.from(randomBytes, (b) => b.toString(16).padStart(2, '0')).join('');
+    const displayName = `guest${Math.floor(10000 + Math.random() * 90000)}`;
+    const email = `guest_${uuid}@guest.local`;
+
+    await authService.register({
+      email,
+      password,
+      display_name: displayName,
+      is_guest: true,
+    });
+
+    await storage.setDeviceUuid(uuid);
+    return { email, password };
+  },
+
+  upgrade: (data: UpgradeRequest) =>
+    apiClient.post<UserProfile>('/auth/upgrade', data).then((r) => r.data),
 };

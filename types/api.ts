@@ -6,8 +6,9 @@ export interface RegisterRequest {
   email: string;
   password: string;
   display_name?: string;
-  diabetes_type: DiabetesType;
-  language_level: LanguageLevel;
+  diabetes_type?: DiabetesType;
+  language_level?: LanguageLevel;
+  is_guest?: boolean;
 }
 
 export interface RegisterResponse {
@@ -50,6 +51,13 @@ export interface UserProfile {
   created_at: string;
   diabetes_type: string | null;
   language_level: string | null;
+  is_guest: boolean;
+}
+
+export interface UpgradeRequest {
+  email: string;
+  password: string;
+  display_name?: string;
 }
 
 export interface UpdateProfileRequest {
