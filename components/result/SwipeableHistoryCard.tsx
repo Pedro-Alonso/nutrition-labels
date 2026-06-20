@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRef } from 'react';
-import { Animated, Text, View } from 'react-native';
+import { Animated, Text } from 'react-native';
 import { RectButton, Swipeable } from 'react-native-gesture-handler';
 import { ScanHistoryCard } from './ScanHistoryCard';
 import type { ScanSummary } from '@/types/api';
