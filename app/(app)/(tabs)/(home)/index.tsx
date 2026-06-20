@@ -7,14 +7,16 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { ErrorMessage } from '@/components/ui/ErrorMessage';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { ROUTES } from '@/constants/routes';
+import { useAuth } from '@/hooks/useAuth';
 import { useMe } from '@/hooks/useMe';
 import { useScans } from '@/hooks/useScans';
 
 export default function HomeScreen() {
+  const { isGuest } = useAuth();
   const { data: user } = useMe();
   const { data, isLoading, isError, refetch, isRefetching } = useScans({ per_page: 3 });
 
-  const firstName = user?.display_name?.trim().split(' ')[0] || 'visitante';
+  const firstName = user?.display_name?.trim().split(' ')[0] || 'Visitante';
 
   return (
     <View className="flex-1 bg-neutral-50">
@@ -25,16 +27,31 @@ export default function HomeScreen() {
         }
       >
         <View
-          className="bg-white px-4 pt-6 pb-4 border-b border-neutral-100"
+          className="bg-white px-4 pt-6 pb-4 border-b border-neutral-100 flex-row items-start justify-between"
           accessible
           accessibilityRole="header"
         >
-          <Text className="text-2xl font-bold text-neutral-900" allowFontScaling>
-            Olá, {firstName}!
-          </Text>
-          <Text className="text-sm text-neutral-500 mt-1" allowFontScaling>
-            Pronto para verificar um produto?
-          </Text>
+          <View className="flex-1">
+            <Text className="text-2xl font-bold text-neutral-900" allowFontScaling>
+              Olá, {firstName}!
+            </Text>
+            <Text className="text-sm text-neutral-500 mt-1" allowFontScaling>
+              Pronto para verificar um produto?
+            </Text>
+          </View>
+          {isGuest && (
+            <Pressable
+              onPress={() => router.push('/(auth)/login')}
+              accessibilityRole="button"
+              accessibilityLabel="Fazer login ou criar conta"
+              className="flex-row items-center gap-1.5 min-h-[44px] px-2"
+            >
+              <Ionicons name="log-in-outline" size={18} color="#059669" />
+              <Text className="text-sm font-semibold text-primary-600" allowFontScaling>
+                Fazer login
+              </Text>
+            </Pressable>
+          )}
         </View>
 
         <Pressable
