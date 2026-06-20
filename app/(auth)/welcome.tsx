@@ -1,8 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import { Pressable, Text, View } from 'react-native';
+import { useState } from 'react';
+import { Alert, Pressable, Text, View } from 'react-native';
 import { Button } from '@/components/ui/Button';
+import { ROUTES } from '@/constants/routes';
+import { useAuth } from '@/hooks/useAuth';
 
 const FEATURES = [
   { icon: 'barcode-outline' as const, label: 'Escaneie o código de barras' },
@@ -11,6 +14,21 @@ const FEATURES = [
 ];
 
 export default function WelcomeScreen() {
+  const { continueAsGuest } = useAuth();
+  const [guestLoading, setGuestLoading] = useState(false);
+
+  const handleContinueAsGuest = async () => {
+    setGuestLoading(true);
+    try {
+      await continueAsGuest();
+      router.replace(ROUTES.HOME);
+    } catch {
+      Alert.alert('Erro', 'Não foi possível continuar como visitante.');
+    } finally {
+      setGuestLoading(false);
+    }
+  };
+
   return (
     <LinearGradient
       colors={['#059669', '#047857']}
@@ -62,6 +80,7 @@ export default function WelcomeScreen() {
             full
             onPress={() => router.push('/(auth)/register')}
             accessibilityLabel="Criar conta"
+            disabled={guestLoading}
           >
             Criar conta
           </Button>
@@ -69,10 +88,32 @@ export default function WelcomeScreen() {
             onPress={() => router.push('/(auth)/login')}
             accessibilityRole="button"
             accessibilityLabel="Já tenho conta"
+            disabled={guestLoading}
             className="min-h-[44px] items-center justify-center rounded-xl px-6 active:bg-white/10"
           >
             <Text className="text-white font-semibold text-lg" allowFontScaling>
               Já tenho conta
+            </Text>
+          </Pressable>
+
+          <View className="flex-row items-center gap-3 my-1">
+            <View className="flex-1 h-px bg-white/20" />
+            <Text className="text-xs text-white/50 font-medium" allowFontScaling>
+              ou
+            </Text>
+            <View className="flex-1 h-px bg-white/20" />
+          </View>
+
+          <Pressable
+            onPress={handleContinueAsGuest}
+            disabled={guestLoading}
+            accessibilityRole="button"
+            accessibilityLabel="Continuar sem criar conta"
+            accessibilityHint="Entra no app sem email e senha. Dados ficam apenas neste dispositivo."
+            className="min-h-[44px] items-center justify-center px-6 active:bg-white/10"
+          >
+            <Text className="text-white/60 font-medium text-sm" allowFontScaling>
+              {guestLoading ? 'Entrando…' : 'Continuar como visitante'}
             </Text>
           </Pressable>
         </View>
