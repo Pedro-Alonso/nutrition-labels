@@ -8,6 +8,7 @@ export const ROUTES = {
   // tabs. O grupo (tabs) faz parte do href tipado (typedRoutes), então os paths
   // das telas em abas precisam incluí-lo.
   HOME: '/(app)/(tabs)/(home)',
+  SEARCH: '/(app)/(tabs)/search',
   SCAN_BARCODE: '/(app)/scan/barcode',
   SCAN_METADATA: '/(app)/scan/metadata',
   SCAN_TABLE_PHOTO: '/(app)/scan/table-photo',

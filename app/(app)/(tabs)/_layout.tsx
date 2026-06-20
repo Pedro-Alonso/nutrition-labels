@@ -29,6 +29,20 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
+        name="search"
+        options={{
+          title: 'Pesquisa',
+          tabBarAccessibilityLabel: 'Pesquisar produtos',
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons
+              name={focused ? 'search' : 'search-outline'}
+              size={22}
+              color={color}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="scan-action"
         options={{
           title: 'Escanear',
